@@ -1,0 +1,31 @@
+name: 기능 제안
+description: 사용자에게 필요한 기능이나 개선을 제안합니다.
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 해결하려는 문제
+      description: 어떤 사용자가 어떤 상황에서 불편한지 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 제안하는 동작
+      description: 화면과 데이터가 어떻게 바뀌어야 하는지 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 완료 기준
+      description: 확인 가능한 조건으로 적어주세요.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 고려한 대안과 제한

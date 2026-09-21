@@ -1,0 +1,40 @@
+name: 버그 제보
+description: 재현 가능한 문제를 제보합니다.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        가능한 한 공고 ID, 화면, 입력 조건과 재현 단계를 함께 적어주세요.
+  - type: textarea
+    id: symptom
+    attributes:
+      label: 문제 내용
+      description: 기대한 동작과 실제 동작을 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 단계
+      placeholder: |
+        1. 공고 탭에서 ...
+        2. ...을 선택
+        3. ... 확인
+    validations:
+      required: true
+  - type: input
+    id: notice
+    attributes:
+      label: 공고 ID 또는 URL
+      description: 개인정보나 비공개 URL은 입력하지 마세요.
+  - type: input
+    id: environment
+    attributes:
+      label: 환경
+      placeholder: 예) Chrome 140, Windows 11, 320px
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 로그·스크린샷·추가 정보

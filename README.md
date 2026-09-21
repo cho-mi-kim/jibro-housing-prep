@@ -49,3 +49,30 @@ VITE_API_BASE=http://localhost:8080
 
 수정 방법은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고하세요.
 프로젝트 구조·수정 원칙·확인 항목은 [agent.md](agent.md)에 정리되어 있습니다. AI 도구용 진입점은 [AGENTS.md](AGENTS.md)입니다.
+
+### 빠른 협업 시작
+
+```sh
+git clone https://github.com/cho-mi-kim/jibro-housing-prep.git
+cd jibro-housing-prep
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+작업은 `feature/작업이름` 브랜치에서 진행하고 `main`으로 Pull Request를 보내주세요.
+Pull Request가 올라오면 GitHub Actions가 프론트엔드와 백엔드를 빌드합니다.
+작업 전에는 [CONTRIBUTING.md](CONTRIBUTING.md)의 절차와 [agent.md](agent.md)의 데이터·접근성 기준을 확인합니다.
+
+### 협업 저장소 설정 체크리스트
+
+저장소 소유자는 GitHub **Settings → Collaborators**에서 작업자를 초대하고, **Settings → Rules → Rulesets** 또는 브랜치 보호 규칙에서 다음을 설정하는 것이 좋습니다.
+
+- `main` 직접 Push 금지
+- Pull Request를 통한 병합만 허용
+- `JIBRO CI / Frontend build`, `JIBRO CI / Backend build` 통과 필수
+- 최소 1명 리뷰 승인 필수
+- 새 커밋이 올라오면 이전 승인 무효화
+- Code Owner 리뷰가 필요한 경우 `CODEOWNERS` 적용
+
+이 저장소에는 협업 파일과 자동 빌드 설정을 넣었지만, GitHub의 Collaborator 초대와 `main` 보호 규칙은 저장소 Settings에서 직접 켜야 합니다.

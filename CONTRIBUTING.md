@@ -1,13 +1,46 @@
 # 수정 및 변경 제안
 
-1. 저장소를 Fork하거나 쓰기 권한이 있다면 Clone합니다.
-2. 작업 브랜치를 만듭니다: `git switch -c feature/작업이름`
-3. README에 따라 실행하고 수정합니다.
-4. `pnpm build`로 빌드를 확인합니다.
-5. 변경 이유·동작·확인 내용을 적어 Pull Request를 보냅니다.
+세부 기준은 [agent.md](agent.md)를 먼저 읽어주세요. 이 문서는 협업 흐름만 설명합니다.
+
+1. 저장소를 Clone합니다. 직접 Push 권한이 없으면 Fork 후 작업합니다.
+2. 항상 최신 `main`에서 작업 브랜치를 만듭니다: `git switch -c feature/작업이름`
+3. README의 프론트엔드·백엔드 실행 방법에 따라 로컬에서 확인합니다.
+4. 변경 범위에 맞는 검증을 실행합니다. 프론트엔드는 `pnpm build`, 백엔드는 `cd backend && gradle build`입니다.
+5. 작업 브랜치를 Push하고 Pull Request를 엽니다. `main`에 직접 Push하지 않습니다.
+6. PR 템플릿의 확인 항목·스크린샷·미검증 항목을 채웁니다.
+7. 리뷰와 CI가 끝난 뒤 PR을 Merge합니다. Merge 후 브랜치는 삭제해도 됩니다.
+
+## 시작 명령
+
+```sh
+git clone https://github.com/cho-mi-kim/jibro-housing-prep.git
+cd jibro-housing-prep
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+백엔드가 필요하면 별도 터미널에서 Java 17과 Gradle 8.x를 준비하고 `cd backend && gradle bootRun`을 실행합니다.
+루트 `.env.local`의 `VITE_API_BASE=http://localhost:8080`을 설정하면 준비 기록 API를 사용합니다.
+
+## 커밋·PR 규칙
+
+- 커밋 제목은 변경 의도가 드러나게 작성합니다. 예: `fix: 공고 전환 시 준비 기록 분리`
+- 한 PR에는 하나의 사용자 문제를 담고, 기능·문구·스타일의 무관한 변경을 섞지 않습니다.
+- 공고 데이터 변경은 출처 URL, 수집 시점, 마감·취소·정정 처리 기준을 함께 적습니다.
+- UI 변경은 320px·360px, 글자 확대, 키보드 포커스와 터치 영역을 확인합니다.
+- 저장·수집·분석 실패를 성공처럼 표시하지 않습니다. 실제로 확인하지 않은 공고 데이터는 예시 값으로 채우지 않습니다.
+- 비밀번호, API 키, 실제 사용자 기록, `.env.local`, 빌드 결과물은 커밋하지 않습니다.
+
+## 리뷰 전에 확인할 것
+
+- `git diff --check`로 공백 오류를 확인합니다.
+- 공고 A/B의 기록이 섞이지 않는지 확인합니다.
+- 화면을 바꿨다면 스크린샷 또는 재현 단계를 PR에 남깁니다.
+- 실행하지 못한 검증은 성공으로 표시하지 않고 PR에 이유를 씁니다.
 
 화면 수정 시 320px 모바일 폭, 키보드 조작, 기존 준비 기록 유지 여부를 확인해주세요.
 공고 데이터 변경 시 공고 A/B의 기록 분리, 마감일 당일 표시, 분석 실패 시 예시 값을 표시하지 않는지 확인해주세요.
 
 비밀번호, API 키, 실제 사용자 기록, `.env.local`, 빌드 결과물은 커밋하지 않습니다.
-직접 Push하려면 조직 관리자가 저장소 쓰기 권한을 부여해야 합니다.
+직접 Push하려면 저장소 소유자가 Collaborator 권한을 부여해야 합니다. 권한이 없으면 Fork에서 PR을 보냅니다.
