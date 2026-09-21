@@ -48,3 +48,4 @@ VITE_API_BASE=http://localhost:8080
 ## 협업
 
 수정 방법은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고하세요.
+프로젝트 구조·수정 원칙·확인 항목은 [agent.md](agent.md)에 정리되어 있습니다. AI 도구용 진입점은 [AGENTS.md](AGENTS.md)입니다.
