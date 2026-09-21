@@ -10,14 +10,14 @@
 
 ## 프론트엔드 실행
 
-Node.js 22.12 이상과 pnpm을 설치한 뒤 실행합니다.
+Node.js 22.12 이상과 npm을 설치한 뒤 실행합니다.
 
 ```sh
-pnpm install --frozen-lockfile
-pnpm dev
+npm ci
+npm run dev
 ```
 
-개발 주소는 http://localhost:5173 입니다. 배포 파일은 `pnpm build`로 생성합니다.
+개발 주소는 http://localhost:5173 입니다. 배포 파일은 `npm run build`로 생성합니다.
 
 ## 서버 실행 및 연결
 
@@ -55,9 +55,8 @@ VITE_API_BASE=http://localhost:8080
 ```sh
 git clone https://github.com/cho-mi-kim/jibro-housing-prep.git
 cd jibro-housing-prep
-corepack enable
-pnpm install --frozen-lockfile
-pnpm dev
+npm ci
+npm run dev
 ```
 
 작업은 `feature/작업이름` 브랜치에서 진행하고 `main`으로 Pull Request를 보내주세요.

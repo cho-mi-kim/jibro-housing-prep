@@ -36,18 +36,18 @@ JIBRO는 주거지원 공고를 확인하고 공고별 조건·서류 준비 상
 
 ## 3. 로컬 실행
 
-프론트엔드는 Node.js 22.12 이상과 pnpm을 사용합니다.
+프론트엔드는 Node.js 22.12 이상과 npm을 사용합니다. Node 버전은 `.nvmrc`, npm 요구 버전은 `package.json`의 `engines`에 고정합니다.
 
 ```sh
-pnpm install --frozen-lockfile
-pnpm dev
+npm ci
+npm run dev
 ```
 
 기본 개발 주소는 `http://localhost:5173`입니다. 빌드와 빌드 결과 확인은 다음과 같습니다.
 
 ```sh
-pnpm build
-pnpm preview
+npm run build
+npm run preview
 ```
 
 서버는 Java 17과 Gradle 8.x가 필요합니다. 현재 Gradle Wrapper는 없습니다.
@@ -61,7 +61,7 @@ gradle bootRun
 설정하지 않으면 준비 기록은 해당 브라우저의 로컬 저장소를 사용합니다.
 `VITE_` 환경 변수는 브라우저에 공개되므로 비밀 키를 넣지 않습니다.
 
-현재 프론트엔드에는 `dev`, `build`, `preview` 명령만 있습니다. `pnpm test`나 `pnpm lint`가 있다고 가정하지 않습니다.
+현재 프론트엔드에는 `dev`, `build`, `preview` 명령만 있습니다. `npm test`나 `npm run lint`가 있다고 가정하지 않습니다.
 백엔드 코드 변경 시 `gradle build`를 사용하되, 테스트가 없으면 빌드 성공을 기능 검증 완료로 표현하지 않습니다.
 
 ## 4. 현재 데이터·API 구조
@@ -149,7 +149,7 @@ gradle bootRun
 - 상태 변경: 공고 A 기록 → B 상세 열람 → A 유지 → B 준비 시작 → B 기록 → A 복귀 → A 기록 보존 → 새로고침을 확인합니다.
 - 수집·날짜 변경: 정상·링크만 저장·취소·정정·마감 당일·마감 후·수집 실패·정상 빈 목록을 확인합니다. 자동화할 때는 고정 샘플과 날짜를 사용합니다.
 - 집 이미지 변경: 0·25·50·75·100%에서 건축 단계와 자재 감소를 확인합니다.
-- 프론트엔드 코드 변경: `pnpm build`를 실행합니다. 백엔드 변경: 가능한 환경에서 `gradle build`와 관련 API 시나리오를 확인합니다.
+- 프론트엔드 코드 변경: `npm run build`를 실행합니다. 백엔드 변경: 가능한 환경에서 `gradle build`와 관련 API 시나리오를 확인합니다.
 - 실행하지 못한 검증은 이유와 함께 보고하며, 성공했다고 추정하지 않습니다.
 
 공유된 작업을 덮어쓰지 않도록 저장소 상태와 원격 변경을 먼저 확인합니다. 협업 시 `codex/작업이름` 또는 팀이 정한 작업 브랜치와 PR을 사용하고, 사용자가 직접 업로드를 요청한 경우 그 범위에 따라 진행합니다.
