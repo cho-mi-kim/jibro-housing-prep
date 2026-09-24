@@ -1,0 +1,38 @@
+.document-plan-caption,.document-review-help{font-size:14px;line-height:1.6;color:#596573;margin:10px 0 16px}
+.document-notice-note{display:flex;align-items:flex-start;gap:8px;background:#fff5ef;border:1px solid #f1d8cb;border-radius:12px;padding:13px;font-size:14px;line-height:1.65;color:#764932}
+.document-notice-note>svg{flex-shrink:0;margin-top:3px}
+.document-section-title{display:flex;align-items:center;gap:8px;font-size:20px;margin:24px 0 12px;line-height:1.4}
+.document-section-title small{color:#66717c;font-size:14px;font-weight:500}
+.document-empty{font-size:15px;line-height:1.6;padding:18px 14px;border:1px dashed #d7c9c3;border-radius:12px}
+.document-review-group{margin:10px 0;border:1px solid #e2dedb;border-radius:12px;background:#fff}
+.document-review-group>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:12px 14px;font-size:15px;font-weight:650;cursor:pointer}
+.document-review-group>summary::-webkit-details-marker{display:none}
+.document-review-group>summary>span:last-child{display:flex;align-items:center;gap:5px;color:#63707b;font-size:14px;flex-shrink:0}
+.document-review-group[open]>summary svg{transform:rotate(180deg)}
+.document-review-group>.documents{padding:0 8px 8px}.document-review-group>.document-review-help{padding:0 12px}
+.notice-documents .notice-document-card .document-heading{flex-wrap:wrap;align-items:center;gap:10px}
+.notice-documents .document-heading-copy{flex:1 1 130px;min-width:0}
+.notice-documents .document-heading-copy b{font-size:16px;line-height:1.45;overflow-wrap:anywhere}
+.notice-documents .document-heading-copy small{font-size:13px;line-height:1.5;color:#62707a}
+.notice-documents .document-heading-end{margin-left:auto}.notice-documents .document-heading-end>.tag{font-size:12px}
+.document-requirement-copy{font-size:14px;line-height:1.65;color:#3d4b56;margin:0 0 12px}
+.document-evidence-summary{padding:12px 14px;border-radius:10px;background:#fff7f2;color:#3d4b56;overflow-wrap:anywhere}
+.document-evidence-summary h3{margin:0 0 6px;font-size:13px;color:#a83c23;line-height:1.5}
+.document-evidence-summary p{margin:0;font-size:15px;font-weight:600;line-height:1.65}
+.document-evidence-summary ul{margin:7px 0 0;padding-left:18px;font-size:14px;line-height:1.65}
+.document-evidence-summary li+li{margin-top:5px}
+.document-source-link{display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:10px;border:1px solid #dce1e5;border-radius:10px;font-size:14px;line-height:1.5;text-decoration:none;color:#3b5265}.document-source-link>svg{flex-shrink:0}
+.document-choice-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.document-choice-actions button{flex:1 1 120px;min-height:48px;border:1px solid #dcbdad;border-radius:10px;background:#fff4ee;color:#a53920;padding:10px;font-size:14px;line-height:1.5}.document-choice-actions button+button{background:#fff;color:#5d6770;border-color:#dce1e5}
+.document-exclude{display:block;min-height:44px;width:100%;border:0;background:none;color:#67717b;font-size:13px;line-height:1.5;padding:10px;margin-top:4px;text-decoration:underline;text-underline-offset:3px}
+.notice-documents :is(button,a,summary):focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+@media(max-width:380px){.notice-documents .document-heading-copy{flex-basis:130px}.notice-documents .document-heading-end{justify-content:flex-end;width:100%}.notice-documents .document-heading-copy b{font-size:15px}.notice-documents .recorded-docs-summary h2>span{white-space:normal}}
+
+.document-evidence-summary + .document-source-link{margin-top:12px}
+
+.document-help-disclosure{margin:8px 0 12px;border:1px solid #f1d8cb;border-radius:10px;background:#fffaf7;color:#764932}
+.document-help-disclosure>summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;cursor:pointer;list-style:none;font-size:13px;line-height:1.5}
+.document-help-disclosure>summary::-webkit-details-marker{display:none}
+.document-help-disclosure>summary>svg{flex-shrink:0}
+.document-help-disclosure>summary>svg:last-child{margin-left:auto}
+.document-help-disclosure[open]>summary>svg:last-child{transform:rotate(180deg)}
+.document-help-disclosure>p{margin:0;padding:0 12px 12px;font-size:14px;line-height:1.65;overflow-wrap:anywhere}
