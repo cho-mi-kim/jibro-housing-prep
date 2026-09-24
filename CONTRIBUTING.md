@@ -5,7 +5,7 @@
 1. 저장소를 Clone합니다. 직접 Push 권한이 없으면 Fork 후 작업합니다.
 2. 항상 최신 `main`에서 작업 브랜치를 만듭니다: `git switch -c feature/작업이름`
 3. README의 프론트엔드·백엔드 실행 방법에 따라 로컬에서 확인합니다.
-4. 변경 범위에 맞는 검증을 실행합니다. 프론트엔드는 `npm run build`, 백엔드는 `cd backend && gradle build`입니다.
+4. 변경 범위에 맞는 검증을 실행합니다. 프론트엔드는 `npm test && npm run build`, 백엔드는 `cd backend && sh ./gradlew build`입니다.
 5. 작업 브랜치를 Push하고 Pull Request를 엽니다. `main`에 직접 Push하지 않습니다.
 6. PR 템플릿의 확인 항목·스크린샷·미검증 항목을 채웁니다.
 7. 리뷰와 CI가 끝난 뒤 PR을 Merge합니다. Merge 후 브랜치는 삭제해도 됩니다.
@@ -19,7 +19,7 @@ npm ci
 npm run dev
 ```
 
-백엔드가 필요하면 별도 터미널에서 Java 17과 Gradle 8.x를 준비하고 `cd backend && gradle bootRun`을 실행합니다.
+백엔드가 필요하면 별도 터미널에서 Java 17를 준비하고 `cd backend && sh ./gradlew bootRun`을 실행합니다.
 루트 `.env.local`의 `VITE_API_BASE=http://localhost:8080`을 설정하면 준비 기록 API를 사용합니다.
 
 ## 커밋·PR 규칙

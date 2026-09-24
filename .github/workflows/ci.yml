@@ -26,6 +26,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Test frontend data rules
+        run: npm test
+
       - name: Build frontend
         run: npm run build
 
@@ -45,10 +48,23 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle 8.10
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: '8.10'
 
       - name: Build backend
-        run: gradle --no-daemon build
+        run: sh ./gradlew --no-daemon build
+
+  snapshot-tools:
+    name: Snapshot tools tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Install analysis dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install -r backend/scripts/requirements.txt
+
+      - name: Test snapshot parsers without contacting LH
+        run: .venv/bin/python -m unittest discover -s backend/scripts -p 'test_*.py'
