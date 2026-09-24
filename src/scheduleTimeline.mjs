@@ -8,6 +8,7 @@ export function koreaToday(now=new Date()){
  return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
 }
 export function scheduleStages(notice={},today=koreaToday()){
+ if(notice.deadlineKind==='notice')notice={...notice,deadline:null};
  const current=dayNumber(today),start=dayNumber(notice.applicationStart),end=dayNumber(notice.deadline);
  const definitions=[
   ['posted','공고 게시',notice.posted],

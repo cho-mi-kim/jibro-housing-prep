@@ -7,6 +7,7 @@ function validDate(value){
  return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===value;
 }
 export function nextSchedule(notice,source,today=koreaToday()){
+ if(notice?.deadlineKind==='notice')notice={...notice,deadline:null};
  const variants=source?.variants?.length?source.variants:[{dates:notice||{}}];
  const upcoming=variants.flatMap(v=>events.flatMap(([id,title],order)=>{
   const date=v.dates[id];

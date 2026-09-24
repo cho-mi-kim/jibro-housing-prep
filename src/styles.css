@@ -330,7 +330,7 @@
 .import-card>div{flex:1;min-width:0}.import-kicker{display:flex;align-items:center;gap:5px;color:var(--orange);font-size:12px;font-weight:800;margin-bottom:6px}.import-card h2{font-size:17px;line-height:1.35;margin:0 0 5px;letter-spacing:-.5px}.import-card p{font-size:12px;margin:0}.import-button{width:auto;white-space:nowrap;padding:10px 12px;font-size:13px}.sheet-icon{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;margin-top:4px;color:var(--orange);background:var(--peach)}.import-help{display:flex;gap:8px;align-items:flex-start;padding:11px 12px;margin:12px 0;border-radius:12px;background:#fff8f4;color:#737b84;font-size:12px;line-height:1.45}.import-help svg{flex:0 0 auto;color:var(--orange);margin-top:1px}.import-reset{justify-content:center;width:100%;margin-top:9px;font-size:12px}.rank-card{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid #e9e1dc;border-radius:16px;background:#fff;padding:12px;margin:12px 0 13px}.rank-card>span:nth-child(2){flex:1;min-width:0}.rank-card b{display:block;font-size:14px}.rank-card small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.rank-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#fff1ea;color:var(--orange);flex:0 0 auto}.rank-result{display:grid;gap:3px;border-radius:12px;background:#f7f8f8;padding:11px 12px;margin-top:12px}.rank-result b{font-size:12px}.rank-result span{font-size:12px;color:var(--muted);line-height:1.4}
 @media(max-width:400px){.import-card{padding:14px 12px;gap:9px}.import-card h2{font-size:15px}.import-button{padding:9px 9px;font-size:12px}.rank-card{padding:11px 9px}.rank-card small{font-size:10px}}
 .rank-summary{border:1px solid #ece2dc;border-radius:16px;background:#fffaf7;padding:12px 13px;margin:12px 0 14px}.rank-summary-head{display:flex;align-items:center;gap:7px;color:var(--orange);font-size:13px}.rank-summary-head b{flex:1;color:var(--ink)}.rank-summary-head button{border:0;background:none;color:var(--muted);font-size:12px;padding:4px 0}.rank-summary p{font-size:12px;line-height:1.45;margin:6px 0 0}
-.notice-heading-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.notice-heading-row h1{margin-bottom:7px}.sync-button{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:8px 10px;font-size:12px;color:var(--muted);white-space:nowrap}.sync-button:hover{border-color:#e1b9aa;color:var(--orange)}.sync-status{display:flex;align-items:center;gap:5px;font-size:11px!important;margin:8px 0 0!important;color:#808891!important}.sync-status .status-dot{width:6px;height:6px;background:var(--green)}
+.notice-heading-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.notice-heading-row h1{margin-bottom:7px}.sync-button{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:8px 10px;font-size:12px;color:var(--muted);white-space:nowrap}.sync-button:hover{border-color:#e1b9aa;color:var(--orange)}.sync-status{display:flex;align-items:center;gap:5px;font-size:12px!important;margin:8px 0 0!important;color:#626b75!important}.sync-status .status-dot{width:6px;height:6px;flex-shrink:0;background:#68717a}.sync-status[data-state="ok"] .status-dot{background:var(--green)}.sync-status[data-state="error"] .status-dot,.sync-status[data-state="stale"] .status-dot{background:#b34329}.sync-button:disabled{opacity:.6;cursor:wait}
 .notice-switcher{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:15px;padding:11px 12px;margin:12px 0 3px;background:#fff}
 .notice-switcher>span{flex:1;min-width:0}.notice-switcher small{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.notice-switcher b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}.notice-switcher .secondary{width:auto;min-height:44px;padding:9px 12px;font-size:12px;white-space:nowrap}
 .sync-button{min-height:44px}.compact-footer button{min-width:44px;min-height:44px;display:grid;place-items:center}.chips{scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.notice-context{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -551,3 +551,24 @@ body{background:#fff;padding:0}
 .notice-region-picker>span{padding-left:30px;font-size:12px;font-weight:400;pointer-events:none}
 .notice-region-picker select{position:absolute;inset:0;opacity:0}
 @media(max-width:359px){.notice-region-picker>span{padding-left:26px}}
+
+.sync-status{display:grid;gap:4px}.sync-message{display:block;font-size:12px;line-height:1.5;overflow-wrap:anywhere}.sync-status[data-state="stale"] .sync-message,.sync-status[data-state="error"] .sync-message{color:#a83820}.sync-button:disabled{opacity:.65;cursor:wait}
+
+/* Keep the list filters tappable and long titles readable on narrow screens. */
+.notice-filter-row .chips button{min-width:44px}
+.featured-notice .hero-main>div{min-width:0;flex:1}
+@media(max-width:399px){.featured-notice .hero-main{gap:8px;min-height:112px}.featured-notice .hero-main .house-illustration{width:80px;height:96px;flex:0 0 80px;margin:8px 0 0}.featured-notice .hero-main h2{font-size:20px;line-height:1.45;word-break:keep-all;overflow-wrap:anywhere}}
+
+.search-box:focus-within{outline:2px solid var(--orange-dark);outline-offset:2px}
+.sync-button:focus-visible,.notice-filter-row .chips button:focus-visible{outline:2px solid var(--orange-dark);outline-offset:2px}
+.notice-deadline-label{white-space:normal;overflow-wrap:anywhere}
+.notice-filter-row{flex-wrap:wrap}
+.notice-filter-row .chips{flex:1 1 160px;flex-wrap:wrap;overflow:visible}
+.notice-region-picker{flex:0 0 auto;min-width:88px;padding-right:26px;min-height:44px;height:auto}
+@media(max-width:359px){.notice-region-picker{flex-basis:auto}}
+
+.search-box input{min-width:0}
+.search-box button{min-width:44px;min-height:44px;display:grid;place-items:center;flex:0 0 44px}
+.featured-notice .circle-button{width:44px;height:44px;min-width:44px;min-height:44px}
+.compact-notice .compact-footer{height:auto;min-height:44px;padding-top:0;padding-bottom:0}
+.compact-notice .compact-footer button{height:44px;min-height:44px;width:44px;min-width:44px}

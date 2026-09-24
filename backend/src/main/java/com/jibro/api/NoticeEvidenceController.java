@@ -6,7 +6,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notice-evidence")
-@CrossOrigin(origins={"http://localhost:5173","http://127.0.0.1:5174","https://jibro-housing-prep.understandingprocess.chatgpt.site"})
 public class NoticeEvidenceController {
     private final NoticeEvidenceService service;
     public NoticeEvidenceController(NoticeEvidenceService service){this.service=service;}

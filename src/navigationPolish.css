@@ -9,3 +9,8 @@
 .app-shell>.bottom-nav button:focus-visible{outline:2px solid #a43d26;outline-offset:-4px;border-radius:10px}
 .app-shell>.topbar .circle-button{width:44px;height:44px;min-width:44px;min-height:44px}
 .app-shell>.topbar button:focus-visible{outline:2px solid #a43d26;outline-offset:2px}
+
+/* Expanded text may wrap without clipping the five navigation labels. */
+.app-shell>.bottom-nav{height:auto;min-height:calc(var(--nav-height) + env(safe-area-inset-bottom,0px))}
+.app-shell>.bottom-nav button{min-height:66px}
+.app-shell>.bottom-nav button b{max-width:100%;white-space:normal;overflow-wrap:anywhere}
