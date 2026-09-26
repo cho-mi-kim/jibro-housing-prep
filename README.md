@@ -4,7 +4,7 @@
 
 ## 빠른 시작
 
-Node.js 22.12 이상과 npm 10.9 이상을 사용합니다. 이 변경은 `codex/sync-site-20260924` 브랜치에서 검토 중입니다. 병합 전에는 해당 브랜치를 받아 실행하세요.
+Node.js 24.19 이상과 npm 10.9 이상을 사용합니다. 이 변경은 `codex/sync-site-20260924` 브랜치에서 검토 중입니다. 병합 전에는 해당 브랜치를 받아 실행하세요.
 
 ```sh
 git clone --branch codex/sync-site-20260924 https://github.com/cho-mi-kim/jibro-housing-prep.git

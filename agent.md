@@ -46,7 +46,7 @@ JIBRO는 주거지원 공고를 확인하고 공고별 조건·서류 준비 상
 
 ## 3. 로컬 실행
 
-프론트엔드는 Node.js 22.12 이상과 npm을 사용합니다. Node 버전은 `.nvmrc`, npm 요구 버전은 `package.json`의 `engines`에 고정합니다.
+프론트엔드는 Node.js 24.19 이상과 npm을 사용합니다. Node 버전은 `.nvmrc`, npm 요구 버전은 `package.json`의 `engines`에 고정합니다.
 
 ```sh
 npm ci

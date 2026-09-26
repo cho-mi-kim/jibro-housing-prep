@@ -22,7 +22,7 @@
     "miniflare": "5.20260923.0-alpha"
   },
   "engines": {
-    "node": ">=22.12.0",
+    "node": ">=24.19.0",
     "npm": ">=10.9.0"
   },
   "type": "module"

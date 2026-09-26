@@ -13,6 +13,8 @@
 
 ## GitHub에서 실행하기 위한 조정
 
+- Node.js 요구 버전과 `.nvmrc`를 검증한 24.19.0으로 맞췄습니다. 기존 CI의 22.12.0에서는 계정 테스트가 사용하는 `node:sqlite`를 기본으로 불러오지 못합니다. npm 잠금 파일의 의존성 버전은 그대로 유지합니다.
+
 - 개인 `.openai/hosting.json`이 없어도 화면과 Worker를 빌드합니다. 해당 파일이 있는 Sites 환경의 패키징은 유지합니다.
 - `npm run preview`는 `dist/client`의 화면을, `npm run preview:account`는 계정 서버까지 실행합니다.
 - 개인 Site 바인딩·비밀 키·실제 회원 DB·압축 배포물·빌드 결과는 추가하지 않았습니다. 기존 소스 ZIP은 갱신하지 않았습니다.
