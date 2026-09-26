@@ -2,7 +2,7 @@ import {koreaToday} from './scheduleTimeline.mjs';
 
 const prefix=/^(?:(?:\[(?:정정|수정|변경|취소)(?:공고)?\]|\((?:정정|수정|변경|취소)(?:공고)?\))\s*)+/;
 export const noticeDay=value=>value?new Date(value+'T00:00:00Z').getTime():Infinity;
-export const noticeDeadlineLabel=notice=>notice?.deadlineKind==='notice'?'공고 마감':'신청 마감';
+export const noticeDeadlineLabel=notice=>notice?.deadlineKind==='notice'?'공고 마감':notice?.deadlineKind==='variants'?'대상별 신청 마감':'신청 마감';
 export function isOfficialNotice(notice){
  try{return notice?.parsed!==false&&/LH/.test(notice.agency||'')&&new URL(notice.url).origin==='https://apply.lh.or.kr'}catch{return false}
 }

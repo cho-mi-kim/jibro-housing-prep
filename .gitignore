@@ -20,3 +20,12 @@ __pycache__/
 output/
 outputs/
 *.tar
+
+# Account preview data and runtime configuration
+.wrangler/
+.dev.vars
+.dev.vars.*
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*

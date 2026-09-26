@@ -17,4 +17,8 @@
 .settings-panel :is(button,input,select):focus-visible,.settings-toggle input:focus-visible+.settings-switch{outline:3px solid var(--orange);outline-offset:3px}
 .settings-panel .settings-help{font-size:13px;line-height:1.65;color:#64707b;margin:12px 0 20px}
 .settings-panel .primary:disabled{opacity:.6;cursor:wait}
+.profile-settings>.account-controls{margin:20px 0 0;padding:0;border:0;border-radius:0}
+.profile-settings-form{margin:20px 0 12px;padding-bottom:20px;border-bottom:1px solid #edf0f2}
+.profile-settings .account-identity>svg{flex-shrink:0}
+.profile-settings .account-identity strong{line-height:1.5}
 @media(prefers-reduced-motion:reduce){.settings-switch:after{transition:none}}

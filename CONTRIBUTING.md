@@ -3,9 +3,9 @@
 세부 기준은 [agent.md](agent.md)를 먼저 읽어주세요. 이 문서는 협업 흐름만 설명합니다.
 
 1. 저장소를 Clone합니다. 직접 Push 권한이 없으면 Fork 후 작업합니다.
-2. 항상 최신 `main`에서 작업 브랜치를 만듭니다: `git switch -c feature/작업이름`
+2. 최신 `main`에서 작업 브랜치를 만듭니다: `git switch -c codex/작업이름`. 미병합 기능을 이어서 작업한다면 해당 PR 브랜치를 기준으로 삼는다고 명시합니다.
 3. README의 프론트엔드·백엔드 실행 방법에 따라 로컬에서 확인합니다.
-4. 변경 범위에 맞는 검증을 실행합니다. 프론트엔드는 `npm test && npm run build`, 백엔드는 `cd backend && sh ./gradlew build`입니다.
+4. 변경 범위에 맞는 검증을 실행합니다. 프론트엔드는 `npm test && npm run build`, 회원·저장은 `npm run test:account`, Java는 `cd backend && sh ./gradlew build`입니다.
 5. 작업 브랜치를 Push하고 Pull Request를 엽니다. `main`에 직접 Push하지 않습니다.
 6. PR 템플릿의 확인 항목·스크린샷·미검증 항목을 채웁니다.
 7. 리뷰와 CI가 끝난 뒤 PR을 Merge합니다. Merge 후 브랜치는 삭제해도 됩니다.
@@ -16,11 +16,11 @@
 git clone https://github.com/cho-mi-kim/jibro-housing-prep.git
 cd jibro-housing-prep
 npm ci
-npm run dev
+npm run preview:account
 ```
 
 백엔드가 필요하면 별도 터미널에서 Java 17를 준비하고 `cd backend && sh ./gradlew bootRun`을 실행합니다.
-루트 `.env.local`의 `VITE_API_BASE=http://localhost:8080`을 설정하면 준비 기록 API를 사용합니다.
+루트 `.env.local`의 `VITE_NOTICES_API_BASE=http://localhost:8080`과 `VITE_NOTICE_EVIDENCE_API_BASE=http://localhost:8080`으로 공고 API를 연결합니다. 회원 기록은 같은 출처의 Worker/D1을 사용합니다. 계정 미리보기는 `http://127.0.0.1:5190`이며 이 주소를 Spring CORS에 허용해야 합니다. Vite만 실행하는 `npm run dev`에서는 계정 기능을 검증할 수 없습니다.
 
 ## 커밋·PR 규칙
 

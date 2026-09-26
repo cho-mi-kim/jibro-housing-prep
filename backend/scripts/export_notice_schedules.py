@@ -3,6 +3,7 @@ Run from the project root. Never execute page scripts or infer missing dates.
 """
 import concurrent.futures, datetime as dt, hashlib, json, re, sys, time, urllib.parse, urllib.request
 from pathlib import Path
+from snapshot_store import atomic_json, merge_success, save_attempt
 from bs4 import BeautifulSoup
 from schedule_pdf import attachment_variants
 import pymupdf
@@ -111,6 +112,9 @@ def main():
  ns=json.loads(Path('src/lhNotices.js').read_text(encoding='utf-8').split('export default ',1)[1].strip().rstrip(';'))
  ns=[n for n in ns if n.get('deadline','')>=today and '취소공고' not in n['title']]
  evidence=json.loads(Path('public/notice-evidence.json').read_text(encoding='utf-8'))['summaries']
+ previous_path=Path('public/notice-schedules.json')
+ previous=json.loads(previous_path.read_text(encoding='utf-8')) if previous_path.exists() else {'version':'schedule-v1','schedules':{}}
+ if previous.get('version')!='schedule-v1' or not isinstance(previous.get('schedules'),dict):raise ValueError('Invalid existing schedule snapshot')
  out={};errors=[];cache=Path('.sites-runtime/schedule-html');cache.mkdir(parents=True,exist_ok=True)
  def get(n):
   url=canonical(n['url']);p=cache/(n['id']+'.html')
@@ -134,10 +138,11 @@ def main():
   for f in concurrent.futures.as_completed(jobs):
    n=jobs[f]
    try:
-    key,value=f.result();out[key]=value;print(n['id'],len(value['variants']),[list(v['dates']) for v in value['variants']],flush=True)
-   except Exception as e:errors.append({'id':n['id'],'error':str(e)});print(n['id'],'ERROR',str(e),flush=True)
- bundle={'version':'schedule-v1','schedules':out}
- Path('public/notice-schedules.json').write_text(json.dumps(bundle,ensure_ascii=False,indent=2),encoding='utf-8')
+    key,value=f.result();out[key]=value;save_attempt('public/notice-analysis-attempts.json','schedules',key,dt.datetime.now(dt.timezone.utc).isoformat(),True);print(n['id'],len(value['variants']),[list(v['dates']) for v in value['variants']],flush=True)
+   except Exception as e:save_attempt('public/notice-analysis-attempts.json','schedules',canonical(n['url']),dt.datetime.now(dt.timezone.utc).isoformat(),False);errors.append({'id':n['id'],'error':str(e)});print(n['id'],'ERROR',str(e),flush=True)
+ bundle={'version':'schedule-v1','schedules':merge_success(previous['schedules'],out)}
+ atomic_json('public/notice-schedules.json',bundle)
  Path('.sites-runtime/schedule-report.json').write_text(json.dumps({'total':len(ns),'collected':len(out),'errors':errors},ensure_ascii=False,indent=2),encoding='utf-8')
  print('COLLECTED',len(out),'/',len(ns))
+ if errors:raise SystemExit(1)
 if __name__=='__main__':main()

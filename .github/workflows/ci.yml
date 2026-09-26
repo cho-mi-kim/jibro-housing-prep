@@ -29,6 +29,9 @@ jobs:
       - name: Test frontend data rules
         run: npm test
 
+      - name: Test account and encrypted notebook flows
+        run: npm run test:account
+
       - name: Build frontend
         run: npm run build
 

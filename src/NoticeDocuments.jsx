@@ -12,9 +12,11 @@ function DocumentCard({doc,expanded,onExpand,onChoose,onDone,onGuide,cardRef,not
   <button className="document-heading" aria-expanded={open} onClick={()=>onExpand(doc.id)}>
    <span className="icon-disc"><FileText size={23}/></span>
    <span className="document-heading-copy"><b>{doc.title}</b><small>{doc.desc}</small></span>
-   <span className="document-heading-end"><span className={'tag '+(doc.included&&doc.done?'success':'attention')}>{doc.included&&doc.done?'준비 완료':doc.excluded?'제외':doc.requirement==='common'?'공통 제출':doc.included?'내 목록':'해당 확인'}</span><ChevronDown className={open?'rotate':''} size={20}/></span>
+   <span className="document-heading-end"><span className={'tag '+(doc.included&&doc.done?'success':'attention')}>{doc.included&&doc.done?'준비 완료':doc.previousDone?'재확인 필요':doc.excluded?'제외':doc.requirement==='common'?'공통 제출':doc.included?'내 목록':'해당 확인'}</span><ChevronDown className={open?'rotate':''} size={20}/></span>
   </button>
   {open&&<div className="document-details">
+   {doc.recommendation&&<p className="document-personal-note">{doc.recommendation}</p>}
+   {doc.previousDone&&<p className="document-personal-note">이전에 준비 완료로 기록했어요. 최신 공고의 발급 기준과 유효 기간을 다시 확인해주세요.</p>}
    {doc.requirement==='legacy'?<p className="document-requirement-copy">이전에 체크한 기록을 보존했어요. 현재 공고의 제출 대상인지 다시 확인해주세요.</p>:<div className="document-evidence-summary"><h3>제출 근거 요약</h3><p>{evidenceSummary.purpose}</p><ul>{evidenceSummary.points.map(point=><li key={point}>{point}</li>)}</ul></div>}
    {doc.guide&&<button className="document-source-link" onClick={()=>onGuide(doc)}>발급 방법</button>}
    {sourceUrl&&<a className="document-source-link" href={sourceUrl} target="_blank" rel="noreferrer"><FileText size={17}/><span>{doc.sourceUrl?`제출서류 원문 보기 · ${location}`:'공고 원문 보기'}</span><ArrowUpRight size={16}/></a>}
@@ -25,7 +27,8 @@ function DocumentCard({doc,expanded,onExpand,onChoose,onDone,onGuide,cardRef,not
 
 export function NoticeDocuments({plan,notice,expanded,onExpand,onChoose,onDone,onGuide,cardRef,loading,error,onRetry}){
  const renderDoc=doc=><DocumentCard key={doc.id} doc={doc} expanded={expanded} onExpand={onExpand} onChoose={onChoose} onDone={onDone} onGuide={onGuide} cardRef={cardRef} noticeUrl={notice.url}/>;
- const groups=[...new Set(plan.pending.map(d=>d.group))];
+ const recommended=plan.recommended||[],otherPending=plan.pending.filter(d=>!recommended.includes(d));
+ const groups=[...new Set(otherPending.map(d=>d.group))];
  return <section className="notice-documents" aria-label="공고별 제출서류 준비">
   <section className="recorded-docs-summary" aria-labelledby="recorded-docs-title"><span className="summary-icon recorded-docs-folder" aria-hidden="true"><FolderOpen size={39} strokeWidth={1.4}/></span><h2 id="recorded-docs-title"><span>내 준비 목록 {plan.included.length}개 중</span><span><strong>{plan.count}개</strong> 준비</span></h2><div className="recorded-docs-progress"><span className="recorded-docs-count" aria-hidden="true"><b>{plan.count}</b><span>/ {plan.included.length}</span></span><div className="progress-track" role="progressbar" aria-label="내 목록의 서류 준비율" aria-valuemin={0} aria-valuemax={Math.max(plan.included.length,1)} aria-valuenow={plan.count} aria-valuetext={plan.included.length?`${plan.included.length}개 중 ${plan.count}개 준비`:'준비할 서류를 확인해주세요'}><i style={{width:100*plan.count/Math.max(plan.included.length,1)+'%'}}/></div></div></section>
   {!plan.source&&<p className="document-notice-note" role="status"><Info size={17}/><span>{loading?'공고별 제출서류를 불러오고 있어요.':error?'제출서류 자료를 불러오지 못했어요. 기존 완료 기록은 유지됩니다.':'확인되지 않은 서류를 필수로 만들지 않아요. 공고 원문에서 제출 목록을 확인해주세요. 기존 완료 기록은 아래에 유지됩니다.'}</span></p>}
@@ -34,7 +37,8 @@ export function NoticeDocuments({plan,notice,expanded,onExpand,onChoose,onDone,o
   {plan.source?.note&&<details className="document-help-disclosure" key={notice.id+"-note"}><summary><Info size={16} aria-hidden="true"/><span>제출 대상·면제 안내</span><ChevronDown size={17} aria-hidden="true"/></summary><p>{plan.source.note}</p></details>}
   <div className="documents">{plan.included.map(renderDoc)}</div>
   {!plan.included.length&&<p className="document-empty">{plan.source?'아래에서 내게 필요한 서류를 확인하고 준비 목록에 추가해요.':'기록한 서류가 없어요.'}</p>}
-  {plan.pending.length>0&&<section className="document-review-section"><h2 className="document-section-title">해당 여부 확인 <small>{plan.pending.length}개</small></h2><details className="document-help-disclosure" key={notice.id+"-candidates"}><summary><Info size={16} aria-hidden="true"/><span>서류 후보 안내</span><ChevronDown size={17} aria-hidden="true"/></summary><p>공고에 나온 서류 후보예요. 모든 서류가 필수는 아니며, 가점·대리 신청·계약 때만 필요한 항목도 포함돼요.</p></details>{groups.map(group=><details className="document-review-group" key={group}><summary><span>{group}</span><span>{plan.pending.filter(d=>d.group===group).length}개 <ChevronDown size={17}/></span></summary><div className="documents">{plan.pending.filter(d=>d.group===group).map(renderDoc)}</div></details>)}</section>}
+  {recommended.length>0&&<section className="document-review-section"><h2 className="document-section-title">내 조건으로 먼저 확인 <small>{recommended.length}개</small></h2><p className="document-review-help">공고에 있는 서류 중 입력한 조건과 관련된 후보예요. 필수 여부를 확인한 뒤 내 목록에 추가해요.</p><div className="documents">{recommended.map(renderDoc)}</div></section>}
+  {otherPending.length>0&&<section className="document-review-section"><h2 className="document-section-title">해당 여부 확인 <small>{otherPending.length}개</small></h2><details className="document-help-disclosure" key={notice.id+"-candidates"}><summary><Info size={16} aria-hidden="true"/><span>서류 후보 안내</span><ChevronDown size={17} aria-hidden="true"/></summary><p>공고에 나온 서류 후보예요. 모든 서류가 필수는 아니며, 가점·대리 신청·계약 때만 필요한 항목도 포함돼요.</p></details>{groups.map(group=><details className="document-review-group" key={group}><summary><span>{group}</span><span>{otherPending.filter(d=>d.group===group).length}개 <ChevronDown size={17}/></span></summary><div className="documents">{otherPending.filter(d=>d.group===group).map(renderDoc)}</div></details>)}</section>}
   {plan.excluded.length>0&&<details className="document-review-group excluded-documents"><summary><span>내가 제외한 서류</span><span>{plan.excluded.length}개 <ChevronDown size={17}/></span></summary><p className="document-review-help">제외해도 이전 완료 기록은 보존돼요. 필요하면 다시 추가할 수 있어요.</p><div className="documents">{plan.excluded.map(renderDoc)}</div></details>}
   <p className="document-review-help">신청 자격이나 필수 서류가 자동 확정되는 것은 아니에요. 정정공고와 최종 제출 요건은 공식 원문을 확인해주세요.</p>
  </section>

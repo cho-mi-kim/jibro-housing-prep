@@ -7,7 +7,7 @@ import './nextScheduleCard.css';
 
 export function NextScheduleCard({notice,onOpen}){
  const [bundle,setBundle]=useState(null),key=evidenceNoticeKey(notice?.url);
- useEffect(()=>{let active=true;loadSchedules().then(data=>{if(active)setBundle(data)}).catch(()=>{});return()=>{active=false}},[key]);
+ useEffect(()=>{let active=true;loadSchedules(key).then(data=>{if(active)setBundle(data)}).catch(()=>{});return()=>{active=false}},[key]);
  const event=nextSchedule(notice,matchingSchedule(notice,bundle));
  const date=event?new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'long',day:'numeric'}).format(new Date(event.date+'T12:00:00+09:00')):null;
  return <button type="button" className="home-next-schedule" onClick={onOpen} aria-label={event?`다음 일정: ${event.date}, ${event.title}${event.hasVariants?', 단지·순위별 일정 확인':''}. 일정 관리 보기`:'다음 일정 확인 필요. 일정 관리 보기'}>

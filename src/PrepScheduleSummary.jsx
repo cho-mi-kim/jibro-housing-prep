@@ -7,7 +7,7 @@ import './prepScheduleSummary.css';
 
 export function PrepScheduleSummary({notice,onOpen}){
  const [bundle,setBundle]=useState(null),[loaded,setLoaded]=useState(false),key=evidenceNoticeKey(notice?.url);
- useEffect(()=>{let active=true;setLoaded(false);loadSchedules().then(data=>{if(active)setBundle(data)}).catch(()=>{}).finally(()=>{if(active)setLoaded(true)});return()=>{active=false}},[key]);
+ useEffect(()=>{let active=true;setLoaded(false);loadSchedules(key).then(data=>{if(active)setBundle(data)}).catch(()=>{}).finally(()=>{if(active)setLoaded(true)});return()=>{active=false}},[key]);
  const source=matchingSchedule(notice,bundle),variant=source?.variants[0];
  // Use one declared schedule, never combine different buildings/ranks into a sequence.
  const upcoming=scheduleStages(variant?variant.dates:notice).filter(e=>e.id!=='posted'&&e.diff!==null&&e.diff>=0).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);

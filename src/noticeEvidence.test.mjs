@@ -32,3 +32,19 @@ test('HWPX provenance never invents a PDF page',()=>{
  assert.equal(evidenceSourceLink('https://apply.lh.or.kr/lhapply/lhFile.do?fileid=123',0),'https://apply.lh.or.kr/lhapply/lhFile.do?fileid=123');
  assert.equal(evidenceLocation({sourceName:'공고.pdf',page:7,region:'왼쪽'}),'PDF 7쪽 (왼쪽)');
 });
+
+test('selected-notice requests are small, cached independently, and retry does not reuse another notice',async()=>{
+ const keys=[evidenceNoticeKey(a),evidenceNoticeKey(a.replace('20763','20764'))],seen=[];
+ const load=createEvidenceLoader(async url=>{seen.push(url);const key=new URL(url,'https://test.local').searchParams.get('url');return Response.json({version:'evidence-v1',summaries:{[key]:{noticeUrl:key}}});});
+ const first=await load({key:keys[0]}),second=await load({key:keys[1]});
+ assert.deepEqual(Object.keys(first.summaries),[keys[0]]);assert.deepEqual(Object.keys(second.summaries),[keys[1]]);
+ await load({key:keys[0]});assert.equal(seen.length,2);await load({key:keys[0],force:true});assert.equal(seen.length,3);
+ assert.ok(seen.every(url=>url.startsWith('/api/notice-snapshots/evidence?')));
+});
+test('Vite-only previews can fall back to the exact committed snapshot without converting transport failures to missing data',async()=>{
+ const seen=[],bundle={version:'evidence-v1',summaries:{}};
+ const load=createEvidenceLoader(async url=>{seen.push(url);return url.startsWith('/api/')?new Response('<html>preview</html>',{headers:{'Content-Type':'text/html'}}):Response.json(bundle);});
+ assert.deepEqual(await load({key:evidenceNoticeKey(a)}),bundle);assert.equal(seen.length,2);
+ const broken=createEvidenceLoader(async()=>new Response('{}',{status:503,headers:{'Content-Type':'application/json'}}));
+ await assert.rejects(broken({key:evidenceNoticeKey(a)}),/snapshot_http/);
+});

@@ -12,7 +12,7 @@ JIBRO는 주거지원 공고를 확인하고 공고별 조건·서류 준비 상
 - React + Vite 프론트엔드와 Java 17 + Spring Boot MVC 백엔드를 유지합니다.
 - 홈의 기본 흐름은 `다음 행동 → 내 준비도 → 내 신청 준비`입니다.
 - 주황 계열 브랜드 색, 벽돌집과 건설자재 변화, 완료·현재·예정 상태 표시를 유지합니다.
-- 하단 탭 순서는 홈·공고·내 준비·가이드·마이입니다. 공통 상단바의 알림·내 정보 버튼을 유지하고, 가이드에는 가이드 제목을 표시합니다. 상세 화면의 뒤로 가기는 별도 맥락입니다.
+- 하단 탭 순서는 홈·공고·내 준비·가이드·마이입니다. 공통 상단바의 알림·내 정보 버튼을 유지하고, 가이드 좌상단에는 JIBRO 로고를 표시합니다. 상세 화면의 뒤로 가기는 별도 맥락입니다.
 - 같은 목적의 CTA나 공식 원문 링크를 한 화면에 반복해서 추가하지 않습니다.
 - 배너 위치, 용어, 상태 배지 노출을 취향만으로 반복 변경하지 않습니다. 재현 가능한 문제와 완료 기준을 먼저 정합니다.
 
@@ -30,6 +30,11 @@ JIBRO는 주거지원 공고를 확인하고 공고별 조건·서류 준비 상
 | `src/NoticeConditions.jsx`, `src/NoticeDocuments.jsx` | 공고별 조건 요약·서류 기록 |
 | `src/ScheduleTimeline.jsx`, `src/NextScheduleCard.jsx` | 전체 신청 일정·다음 일정 |
 | `src/SettingsSheets.jsx`, `src/MySupport.jsx` | 알림·프로필 설정, 서비스 안내·문의 |
+| `src/AccountPage.jsx`, `src/SignupWizard.jsx`, `src/ApplicantEditor.jsx` | 이메일 계정, 단계별 가입과 신청 조건 수정 |
+| `server/`, `db/`, `drizzle/` | Worker/D1 회원 인증, 암호화 준비 기록, DB 스키마와 마이그레이션 |
+| `src/noticeLifecycle.mjs`, `scripts/build-notice-catalog.mjs` | 공고·자료 버전, 재확인 상태, 실제 일정 기반 앱 알림 |
+| `src/documentRecommendations.mjs` | 입력한 신청 조건에 관련된 기존 서류 후보 먼저 표시 |
+| `docs/TODO.md` | 미완료 작업과 진행 조건. 완료 항목은 제거하고 기존 번호 유지 |
 | `backend/EVIDENCE.md`, `docs/notice-documents.md` | 발췌·스냅샷 생성과 서류 데이터의 검증 범위 |
 | `backend/src/main/java/com/jibro/api/JibroApplication.java` | 서버 시작, 스케줄링 활성화 |
 | `backend/src/main/java/com/jibro/api/NoticeController.java` | LH 목록 수집, 갱신, URL 가져오기 |
@@ -45,10 +50,10 @@ JIBRO는 주거지원 공고를 확인하고 공고별 조건·서류 준비 상
 
 ```sh
 npm ci
-npm run dev
+npm run preview:account
 ```
 
-기본 개발 주소는 `http://localhost:5173`입니다. 빌드와 빌드 결과 확인은 다음과 같습니다.
+계정 미리보기 주소는 `http://127.0.0.1:5190`입니다. 임시 Worker/D1에 일반 테스트 회원 `admin / admin`을 생성하며 종료 시 기록과 키가 폐기됩니다. `npm run dev`의 `http://localhost:5173`과 `npm run preview`는 화면만 확인하며 계정 서버를 제공하지 않습니다. 빌드와 화면 빌드 결과 확인은 다음과 같습니다.
 
 ```sh
 npm run build
@@ -62,33 +67,35 @@ cd backend
 sh ./gradlew bootRun
 ```
 
-루트의 `.env.example`을 참고해 `.env.local`에 `VITE_API_BASE=http://localhost:8080`을 설정하고 프론트엔드를 다시 시작합니다.
-설정하지 않으면 준비 기록은 해당 브라우저의 로컬 저장소를 사용합니다.
+루트의 `.env.example`을 참고해 `.env.local`에 `VITE_NOTICES_API_BASE=http://localhost:8080`, `VITE_NOTICE_EVIDENCE_API_BASE=http://localhost:8080`을 설정하고 다시 빌드합니다. 계정 미리보기의 출처를 Spring CORS에 허용해야 합니다.
+회원 준비 기록은 같은 출처의 Worker API를 사용합니다. `VITE_API_BASE`는 이전 공고 API 공통 주소이며 인증·회원 저장을 연결하지 않습니다. 기존 브라우저 기록은 사용자가 가져오기를 선택할 때만 회원 기록과 합칩니다.
 `VITE_` 환경 변수는 브라우저에 공개되므로 비밀 키를 넣지 않습니다.
 
-프론트엔드는 `npm test`와 `npm run build`를 실행합니다. `npm run lint`는 없습니다.
+프론트엔드는 `npm test`와 `npm run build`를 실행합니다. 회원·저장은 `npm run test:account`도 실행합니다. `npm run lint`는 없습니다. GitHub 빌드는 개인 `.openai/hosting.json` 없이 `dist/client`와 `dist/server`를 생성해야 합니다.
 백엔드는 `sh ./gradlew build`(Windows: `gradlew.bat build`)로 테스트와 빌드를 실행합니다. 분석 도구는 `backend/scripts/requirements.txt`를 설치하고 루트에서 `python -m unittest discover -s backend/scripts -p "test_*.py"`로 검증합니다.
 
 ## 4. 현재 데이터·API 구조
 
 - `selected`: 상세 화면에서 살펴보는 공고입니다.
 - `activeNoticeId`: 현재 준비 중인 공고의 식별자입니다.
-- `noticeData[noticeId]`: 해당 공고의 `done`, `conditions`, `rankProfile` 기록입니다.
+- `noticeData[noticeId]`: 해당 공고의 `done`, `conditions`, `rankProfile`, 서류 포함 선택 및 근거 버전 기록입니다. `conditionVersions`·`documentVersions`가 현재 근거와 일치하는 체크만 준비도에 포함합니다. 이전 체크를 임의 삭제하지 않습니다.
 - `noticeSnapshots`: 현재 목록에서 빠진 공고도 준비 기록과 함께 식별하기 위한 공고 정보입니다.
 - `importedNotice`, 최상위 `done`·`conditions` 등에는 기존 호환 로직이 남아 있습니다. 제거할 때는 저장 데이터 이전을 고려합니다.
-- 로컬 키는 `jibro-v2`, `jibro-device-id`, `jibro-notifications-read:{noticeId}`입니다. 요청 없이 초기화하지 않습니다.
+- 이전 로컬 키 `jibro-v2`, `jibro-device-id`는 기록 가져오기에 사용합니다. 요청 없이 초기화하지 않습니다. 현재 알림 읽음은 회원 기록의 `notificationReads`에 공고·일정별 이벤트 ID로 저장하며 이전 공고 단위 읽음을 재사용하지 않습니다.
 
 | API | 현재 역할 |
 | --- | --- |
 | `GET /api/notices` | `items`, `lastCheckedAt`, `status` 형태의 목록 스냅샷 조회 |
 | `POST /api/notices/refresh` | 목록 수집 재시도 |
 | `POST /api/notices/import` | `{ "url": "..." }`를 받아 공고 정보 추출 시도 |
-| `GET /api/notebook` | `X-Jibro-Device` 헤더에 해당하는 기록 조회 |
-| `PUT /api/notebook` | 같은 헤더와 JSON 본문으로 기록 저장 |
+| `/api/account*` | 같은 출처 Worker의 가입·로그인·세션·계정 설정·메일 처리 |
+| `GET /api/member-notebook` | 세션 회원의 암호화 준비 기록 조회 |
+| `PUT /api/member-notebook` | 회원 기록 저장. revision 충돌 시 기존 기록을 덮어쓰지 않음 |
+| `GET/PUT /api/notebook` (Spring) | 이전 기기 헤더 방식 API. 현재 회원 화면은 사용하지 않음 |
 
-서버는 현재 로그인 계정 대신 기기 헤더를 사용하며, 실행 계정 홈의 `.jibro/notebook-state.json`에 기록을 저장합니다.
-이는 인증·권한 검증을 갖춘 다중 사용자 저장소가 아닙니다. 저장 실패는 503으로 반환하며 기존 기록을 보존합니다. 헤더 누락 시 `anonymous` 처리는 남아 있습니다.
-인증 없이 공개 운영 가능한 상태라고 설명하지 않습니다.
+회원 서버는 Better Auth 세션의 사용자 ID로 D1 기록을 구분합니다. 비밀번호는 scrypt 해시, 신청 조건·준비 기록은 서버의 별도 키로 AES-256-GCM 암호화합니다. 이메일·닉네임은 준비 기록 암호화 범위에 포함되지 않습니다. 키 누락 시 평문 저장으로 우회하지 않습니다. 설정·기존 기록 변환·키 교체는 `docs/EMAIL_AUTH.md`와 `docs/NOTEBOOK_ENCRYPTION.md`를 따릅니다.
+
+Spring에 남아 있는 기기 헤더 기반 JSON 저장 API는 회원 인증 서버가 아니며 공개 회원 저장에 사용하지 않습니다. Worker/D1 회원 서버와 Spring 수집 서버를 혼동하지 않습니다. 운영 호스팅·DB·메일·접근 설정은 TODO의 미완료 항목입니다.
 
 ## 5. 기능 수정 시 지켜야 할 기준
 
@@ -141,8 +148,10 @@ sh ./gradlew bootRun
 - URL 가져오기는 정규화된 LH 상세 주소의 실제 제목·공고 ID를 확인합니다. 일치하는 수집 목록의 지역·유형·공고 마감일만 재사용하며 임의의 날짜 범위를 신청 기간으로 사용하지 않습니다. PDF·HWPX 조건 발췌 API(`/api/notice-evidence`)와 저장된 조건·일정·서류 자료는 구현됐지만, 가져오기 API가 이를 자동으로 완전히 분석하는 구조는 아닙니다.
 - 브라우저에서 LH에 직접 수집하지 않습니다. `VITE_NOTICES_API_BASE` 또는 `VITE_API_BASE`가 있어야 갱신됩니다. 미연결 시 내장 스냅샷과 수집 시각을 표시합니다. `deadlineKind: notice`는 공고 마감일이며 실제 신청 일정으로 대체하지 않습니다.
 - 저장된 85개 공고의 서류 후보와 출처가 있습니다. 모든 후보가 개인별 필수 서류는 아닙니다. `documentChoices`로 포함한 항목과 검증된 공통 항목을 준비도 분모에 사용하며, 제외해도 이전 완료 기록을 삭제하지 않습니다.
-- 알림에는 고정 문구가 남아 있고 읽음 상태도 공고 단위입니다. 실제 이벤트별 알림 구현으로 오해하지 않습니다.
-- 계정 인증·인가·데이터베이스·안정적인 저장 실패 처리와 운영 배포 검증은 후속 작업입니다.
+- 알림은 현재/관심 공고의 확인된 일정과 근거 변경에 연결하고 이벤트별 읽음을 회원 기록에 저장합니다. 외부 이메일·푸시 알림을 발송하는 기능은 아닙니다.
+- 회원 인증·암호화·동시 저장 보호·단계별 입력은 구현됐습니다. 실제 이메일 발송 서비스 연결과 공개 운영 배포·다중 기기 검증은 후속 작업입니다.
+- 신규 공고 전체 서류 자동 분석, 다른 ID 정정·취소 관계, 실제 서버의 정기 수집 연결은 아직 미완료입니다. `docs/TODO.md`와 검증 기록을 확인합니다.
+- 공개 호스팅에 테스트 로그인을 활성화하지 않습니다. 개인 소유자 전용 Site의 기존 테스트 계정은 사용자의 지시에 따라 유지하지만, 접근 범위 확장 전에는 제거해야 합니다. 비밀 키와 실제 데이터를 GitHub에 복사하지 않습니다.
 
 기능을 실제로 개선한 경우 이 제한 목록과 README도 함께 갱신합니다. 문서만 바꾸고 기능이 완료됐다고 표시하지 않습니다.
 

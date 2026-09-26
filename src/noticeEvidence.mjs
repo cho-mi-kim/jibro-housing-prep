@@ -16,9 +16,18 @@ export function evidenceSourceLink(value,page){
 }
 
 // Cache successful snapshots only; transport failures must not look like missing evidence.
-export function createEvidenceLoader(fetcher=globalThis.fetch,{timeoutMs=15000,maxAgeMs=300000}={}){
- let pending=null,expires=0;
- return function load({force=false}={}){
+export function createEvidenceLoader(fetcher=(...args)=>fetch(...args),{timeoutMs=15000,maxAgeMs=300000}={}){
+ let pending=null,expires=0;const byNotice=new Map();
+ return function load({force=false,key=null}={}){
+  if(key){
+   const normalized=evidenceNoticeKey(key);if(!normalized)return Promise.reject(new Error('invalid_notice'));
+   if(!byNotice.has(normalized))byNotice.set(normalized,createEvidenceLoader(async(_,options)=>{
+    const r=await fetcher('/api/notice-snapshots/evidence?url='+encodeURIComponent(normalized),options);
+    if(r.status===404||(r.ok&&!r.headers?.get('content-type')?.includes('application/json')))return fetcher('/notice-evidence.json',options);
+    return r;
+   },{timeoutMs,maxAgeMs}));
+   return byNotice.get(normalized)({force});
+  }
   if(pending&&!force&&Date.now()<expires)return pending;
   const controller=new AbortController();let timer;
   const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(new Error('snapshot_timeout'))},timeoutMs)});

@@ -11,6 +11,7 @@ import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from snapshot_store import atomic_json, save_attempt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--api', default='http://127.0.0.1:8081')
@@ -44,22 +45,17 @@ for i, notice in enumerate(notices):
             data = json.load(response)
         if data.get('version') != 'evidence-v1' or data.get('noticeUrl') != notice_key(notice['url']) or not isinstance(data.get('criteria'), list):
             raise ValueError('Invalid evidence response')
+        if data.get('status') == 'unavailable':
+            raise ValueError('No readable evidence: previous successful excerpt retained')
         bundle['summaries'][data['noticeUrl']] = data
+        save_attempt('public/notice-analysis-attempts.json','conditions',data['noticeUrl'],dt.datetime.now(dt.timezone.utc).isoformat(),True)
         print(f"{i+1}/{len(notices)} {notice['id']} {data['status']} sources={len(data['sources'])}", flush=True)
     except Exception as error:
+        save_attempt('public/notice-analysis-attempts.json','conditions',notice_key(notice['url']),dt.datetime.now(dt.timezone.utc).isoformat(),False)
         failures.append({'noticeId': notice['id'], 'url': notice['url'], 'error': str(error)})
         print(f"{i+1}/{len(notices)} {notice['id']} FETCH_FAILED", flush=True)
     bundle['generatedAt'] = dt.datetime.now(dt.timezone.utc).isoformat()
-    output.parent.mkdir(parents=True, exist_ok=True)
-    temporary = output.with_suffix('.tmp')
-    temporary.write_text(json.dumps(bundle, ensure_ascii=False, indent=2), encoding='utf-8')
-    for retry in range(10):
-        try:
-            temporary.replace(output)
-            break
-        except OSError:
-            if retry == 9: raise
-            time.sleep(.5)
+    atomic_json(output, bundle)
     time.sleep(1)
 report = {'total': len(notices), 'saved': len(bundle['summaries']), 'failed': failures,
           'withEvidence': sum(s['status'] == 'partial' for s in bundle['summaries'].values()),
