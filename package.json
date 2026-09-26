@@ -1,1 +1,29 @@
-{"scripts":{"dev":"vite","build":"vite build","preview":"vite preview"},"dependencies":{"@vitejs/plugin-react":"latest","vite":"latest","react":"latest","react-dom":"latest","lucide-react":"latest"},"devDependencies":{},"engines":{"node":">=22.12.0","npm":">=10.9.0"}}
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/build-account-site.mjs",
+    "preview": "vite preview --outDir dist/client",
+    "test": "node scripts/run-frontend-tests.mjs",
+    "db:generate": "drizzle-kit generate",
+    "test:account": "node --test server/account.test.mjs server/notebook-crypto.test.mjs server/mail.test.mjs server/notice-snapshots.test.mjs",
+    "preview:account": "node scripts/build-account-site.mjs && node scripts/preview-account.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "better-auth": "1.7.6",
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "latest",
+    "drizzle-orm": "0.45.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.11",
+    "miniflare": "5.20260923.0-alpha"
+  },
+  "engines": {
+    "node": ">=24.19.0",
+    "npm": ">=10.9.0"
+  },
+  "type": "module"
+}

@@ -1,0 +1,19 @@
+.document-heading .document-heading-copy{min-width:0;flex:1}
+.document-heading .document-heading-copy small{margin:3px 0 0;overflow-wrap:anywhere}
+.document-heading .document-heading-end{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.document-heading .document-heading-end>.tag{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 7px;font-size:11px;line-height:1.3;white-space:nowrap}
+.document-heading .document-heading-end>.tag.attention{background:#fff0eb;color:var(--orange)}
+.document-heading .document-status-mark{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:var(--orange);color:white;font-size:10px;font-weight:800;line-height:1;flex-shrink:0}
+.document-heading>.icon-disc,.document-heading-end>svg{flex-shrink:0}
+@media(max-width:380px){.document-card .document-heading{gap:8px;padding:13px 10px}.document-card .document-heading>.icon-disc{width:32px;height:36px}.document-card .document-heading-copy b{font-size:14px;overflow-wrap:anywhere}.document-heading .document-heading-end{gap:5px}.document-heading .document-heading-end>.tag{padding:4px 6px}}
+.doc-prepared-control{position:relative;display:flex;align-items:center;gap:10px;min-height:52px;margin-top:12px;padding:12px 14px;border:1px solid #e9c7ba;border-radius:12px;background:#fff;color:#a83b25;font-size:14px;font-weight:650;line-height:1.45;cursor:pointer;transition:background-color .15s,border-color .15s}
+.doc-prepared-control input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.doc-prepared-mark{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border:1.5px solid #bf806b;border-radius:6px;background:#fff;color:#fff}
+.doc-prepared-mark svg{opacity:0}
+.doc-prepared-label{flex:1;min-width:0}
+.doc-prepared-control.is-prepared{border-color:var(--orange);background:#fff1eb;color:var(--orange-dark)}
+.doc-prepared-control.is-prepared .doc-prepared-mark{border-color:var(--orange);background:var(--orange)}
+.doc-prepared-control.is-prepared .doc-prepared-mark svg{opacity:1}
+.doc-prepared-control:has(input:focus-visible){outline:3px solid var(--orange);outline-offset:3px}
+@media(hover:hover){.doc-prepared-control:hover{background:#fff5ef;border-color:var(--orange)}}
+@media(prefers-reduced-motion:reduce){.doc-prepared-control{transition:none}}

@@ -1,0 +1,16 @@
+/* Shared navigation: preserve geometry while improving recognition and touch targets. */
+.app-shell>.bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr));background:#fff}
+.app-shell>.bottom-nav button{min-width:44px;min-height:44px;color:#626f7e;gap:3px}
+.app-shell>.bottom-nav button>span{width:48px;height:29px;border-radius:12px}
+.app-shell>.bottom-nav button b{font-size:11px;line-height:1.4;font-weight:600;white-space:nowrap}
+.app-shell>.bottom-nav button.active{color:#b54127}
+.app-shell>.bottom-nav button.active>span{background:#fff0e8}
+.app-shell>.bottom-nav button.active b{font-weight:750}
+.app-shell>.bottom-nav button:focus-visible{outline:2px solid #a43d26;outline-offset:-4px;border-radius:10px}
+.app-shell>.topbar .circle-button{width:44px;height:44px;min-width:44px;min-height:44px}
+.app-shell>.topbar button:focus-visible{outline:2px solid #a43d26;outline-offset:2px}
+
+/* Expanded text may wrap without clipping the five navigation labels. */
+.app-shell>.bottom-nav{height:auto;min-height:calc(var(--nav-height) + env(safe-area-inset-bottom,0px))}
+.app-shell>.bottom-nav button{min-height:66px}
+.app-shell>.bottom-nav button b{max-width:100%;white-space:normal;overflow-wrap:anywhere}

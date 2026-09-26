@@ -20,4 +20,4 @@ export const daysLeft = date => {
  const [year,month,day]=date.split('-').map(Number);
  return Math.round((Date.UTC(year,month-1,day)-today)/86400000);
 };
-export const deadlineText = date => { const left=daysLeft(date); return left===null||Number.isNaN(left)?'공고 원문 확인':left<0?'접수 마감':`D-${left}`; };
+export const deadlineText = date => { const left=daysLeft(date); return left===null||Number.isNaN(left)?'공고 원문 확인':left<0?'접수 마감':left===0?'D-day':`D-${left}`; };
