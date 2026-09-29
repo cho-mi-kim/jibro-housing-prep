@@ -19,8 +19,9 @@ npm ci
 npm run preview:account
 ```
 
-백엔드가 필요하면 별도 터미널에서 Java 17를 준비하고 `cd backend && sh ./gradlew bootRun`을 실행합니다.
-루트 `.env.local`의 `VITE_NOTICES_API_BASE=http://localhost:8080`과 `VITE_NOTICE_EVIDENCE_API_BASE=http://localhost:8080`으로 공고 API를 연결합니다. 회원 기록은 같은 출처의 Worker/D1을 사용합니다. 계정 미리보기는 `http://127.0.0.1:5190`이며 이 주소를 Spring CORS에 허용해야 합니다. Vite만 실행하는 `npm run dev`에서는 계정 기능을 검증할 수 없습니다.
+Node.js 24.19 이상과 Java 17 JDK가 모두 필요합니다. `npm run preview:account`가 Spring과 React를 함께 실행하며 주소는 `http://127.0.0.1:5173`입니다. 서버를 따로 실행하려면 `cd backend`에서 `sh ./gradlew bootRun`(Windows: `gradlew.bat bootRun`) 후 루트에서 `npm run dev`를 실행하세요.
+
+회원 기록은 로컬 H2 DB에 유지되며 운영은 PostgreSQL을 사용합니다. DB와 암호화 키를 함께 보존하고 Git에 넣지 않습니다. 이전 Worker 소스는 `migration/legacy-worker/`의 참고 자료입니다. 실제 Site 계정은 [이관 절차](docs/SPRING_MIGRATION.md) 없이 복사·초기화하지 않습니다.
 
 ## 커밋·PR 규칙
 

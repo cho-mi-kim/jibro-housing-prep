@@ -1,4 +1,4 @@
-import {signupNickname} from '../src/signupFlow.mjs';
+import {signupNickname} from '../../../src/signupFlow.mjs';
 import {createAuth,POLICY_VERSION} from './auth.mjs';
 import {HttpError,normalizeNotebook,validatedApplicantProfile} from './notebook.mjs';
 import {json,writeGuard,body} from './request.mjs';

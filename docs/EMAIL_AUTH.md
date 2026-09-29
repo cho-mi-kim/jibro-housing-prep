@@ -1,49 +1,55 @@
-# 이메일·비밀번호 계정
+# Spring 회원·이메일 API
 
-Sites의 Worker와 D1을 사용한다. 기존 Spring 공고 수집 API와 인증 저장소는 별개다. 다른 호스팅으로 옮길 때에도 인증 Worker를 배포하고 같은 출처의 `/api/account*`, `/api/member-notebook` 경로로 연결해야 한다. 프론트엔드만 올리면 계정 기능은 동작하지 않는다.
+React의 같은 출처 `/api` 요청을 Java 17 Spring MVC가 처리합니다. 운영 저장소는 PostgreSQL, 로컬은 파일 H2입니다. 이전 Worker/D1 코드는 `migration/legacy-worker/`에 이관 참고용으로 남겨두었습니다.
 
-## 실행과 검증
+## 로컬 실행
 
-`npm ci`, `npm test`, `npm run test:account`, `npm run build` 순서로 확인한다. `node scripts/preview-account.mjs`는 `http://127.0.0.1:5190`에서 실제 Worker/D1 환경의 로컬 미리보기를 실행한다. 테스트 계정과 데이터는 임시 저장소를 사용하며 프로세스 종료 시 폐기한다. 실제 회원 데이터나 비밀번호를 테스트에 사용하지 않는다. `npm run dev`는 화면 개발용 Vite이며 인증 검증에는 위 미리보기를 사용한다.
+루트에서 `npm ci`, `npm run preview:account`를 실행하고 `http://127.0.0.1:5173`을 엽니다. Java 17 JDK와 `JAVA_HOME`이 필요합니다. `backend/.local-data/`에 DB와 키가 유지됩니다. `admin/admin`은 local 프로필의 일반 테스트 회원이고 관리자 권한이 없습니다. 비밀번호를 바꾸면 바뀐 값이 유지되며 로그인할 때 기본 비밀번호로 덮어쓰지 않습니다. `JIBRO_TEST_LOGIN_ENABLED=false`이면 기존 테스트 세션도 사용할 수 없습니다. prod 프로필은 이 변수가 true여도 테스트 로그인을 허용하지 않습니다.
 
-## 운영 설정
+로컬 테스트에는 가상 회원만 사용하세요. `npm run test:account`는 별도 임시 DB로 검증하며 로컬 회원 DB를 초기화하지 않습니다.
 
-로컬 미리보기에는 `admin / admin` 테스트 회원이 자동으로 생성된다. 일반 회원과 같은 세션·기록 저장을 사용하며 관리자 권한은 없다. 프로세스 종료 시 로컬 계정과 기록은 초기화된다. `server/preview-worker.mjs`가 localhost에서만 ID를 테스트 이메일로 연결한다. 이 파일은 운영 빌드의 진입점이 아니다.
+## API 계약
 
-사용자의 요청에 따라 소유자 전용 Sites에서도 테스트 계정을 지원한다. `JIBRO_TEST_LOGIN_ENABLED=1`, `JIBRO_TEST_LOGIN_SCOPE=owner-private-site`, 해시만 담은 비밀 변수 `JIBRO_TEST_PASSWORD_HASH`와 정확한 `JIBRO_APP_ORIGIN`이 모두 필요하다. 접근 제한은 Worker 앞단의 Sites 소유자 전용 접근 정책이 담당한다. 사이트별 사용자 ID는 워크스페이스 계정 ID와 다르므로 서로 비교하지 않으며, 표시용 이메일도 권한 판정에 사용하지 않는다. 설정 시 현재 Site가 소유자만 허용하는지 반드시 확인한다. **공개 범위를 넓히거나 다른 호스팅으로 옮기기 전에는 테스트 활성화·범위 변수를 제거하고 배포해 기존 테스트 세션의 기록 접근도 차단해야 한다.** 일반 회원 가입의 비밀번호 길이 제한은 유지한다. 이 계정은 관리자 권한이 없는 일반 테스트 회원이며, 배포 환경의 기록은 D1에 유지된다. 최초 로그인 시 생성하고 기존 계정의 비밀번호는 덮어쓰지 않는다. 탈퇴하면 기록이 삭제되며 이후 테스트 로그인 시 빈 계정이 다시 만들어질 수 있다. 로그인 입력란은 아이디를 허용하지만 회원가입 입력란은 이메일 형식을 확인한다.
+| 요청 | 동작 |
+| --- | --- |
+| GET `/api/account` | 회원 정보 또는 user:null, testLoginAvailable, emailAvailable, policyVersion |
+| GET `/api/account/csrf` | 변경 요청용 마스킹 토큰과 headerName |
+| POST `/api/account/register` | 이메일·비밀번호·닉네임·필수 동의·선택 신청 조건으로 가입 |
+| POST `/api/account/login`, `/logout` | 로그인, 현재 세션 폐기 |
+| POST `/api/account/password` | 현재 비밀번호 확인, 변경, 모든 이전 세션 폐기, 현재 요청에 새 세션 발급 |
+| DELETE `/api/account` | 현재 비밀번호·탈퇴 문구 확인 후 회원·세션·준비 기록·토큰 삭제 |
+| GET/PUT `/api/member-notebook` | 세션 회원의 준비 기록. PUT은 `{revision,state}`; 충돌은 409 |
+| POST `/api/account/send-verification`, `/request-password-reset` | 인증 재요청·비밀번호 복구 메일 접수 |
+| POST `/api/account/verify-email`, `/reset-password` | 30분 이내의 일회용 토큰 소비 |
 
-- `.openai/hosting.json`: `d1: "DB"`.
-- `JIBRO_APP_ORIGIN`: 배포된 HTTPS 사이트의 정확한 출처. 경로와 끝 슬래시 없음.
-- `JIBRO_AUTH_SECRET`: 충분히 긴 암호학적 난수. Sites 비밀 환경변수로만 보관한다. 소스·브라우저·로그에 넣지 않는다. 변경하면 기존 세션에 영향을 줄 수 있다.
-- `JIBRO_NOTEBOOK_KEYS`: 신청 조건·준비 기록을 암호화하는 별도의 서버 비밀 키 묶음. [설정·기존 기록 변환·키 교체 절차](NOTEBOOK_ENCRYPTION.md)를 따른다. 키가 없으면 평문으로 저장하지 않고 요청을 실패 처리한다.
-- `db/schema.ts`에서 내보내는 스키마를 바꾸면 `npm run db:generate` 후 새 마이그레이션을 검토한다. 배포된 기존 마이그레이션은 수정하지 않는다.
-- 서버에는 Better Auth의 scrypt 비밀번호 해시와 HttpOnly/Secure/SameSite 쿠키 세션을 사용한다. 세션 기간은 7일이다. 노트 접근은 세션 사용자 ID로 제한하며, 브라우저에서 보낸 사용자 ID나 기기 ID를 인증에 사용하지 않는다.
-- 약관·개인정보 동의 버전과 시각을 저장한다. 기본 인증 라이브러리의 직접 가입 경로는 차단해 동의 절차를 우회할 수 없도록 한다.
-- 기존 기기 기록은 자동으로 회원에게 귀속하지 않는다. 사용자가 가져오기를 선택했을 때만 합치며 계정의 동일 공고 기록을 우선한다.
+변경 요청은 JSON, 정확한 `Origin`, `X-Jibro-Request: 1`, `X-XSRF-TOKEN`과 쿠키를 함께 보냅니다. `src/accountClient.mjs`가 처리합니다. `/api/auth` 직접 가입과 옛 `/api/notebook`은 차단됩니다. 브라우저가 보내는 회원 ID·기기 ID로 다른 사람의 기록에 접근할 수 없습니다.
 
-## 이메일 인증·비밀번호 재설정
+비밀번호는 12~128자이며 NFKC 정규화 후 Spring Security scrypt 해시로 저장합니다. 기존 Better Auth 해시는 이관 후 첫 정상 로그인에 새 형식으로 바뀝니다. 32바이트 난수 세션의 SHA-256만 DB에 저장하고 7일 만료를 적용합니다. 운영 쿠키는 `__Host-`, HttpOnly, Secure, SameSite=Lax입니다. CSRF 쿠키는 HttpOnly·SameSite=Strict입니다. 회원 응답은 no-store입니다.
 
-화면과 서버 처리, Resend 발송 어댑터를 구현했다. 발송 설정이 없으면 계정 응답의 emailAvailable은 false이고, 요청은 503 email_unavailable로 실패한다. 발송하지 않았는데 성공했다고 표시하지 않는다. 로그인·가입과 admin 테스트 계정은 기존처럼 유지한다.
+이메일·IP별 DB 요청 제한, 세션 재검사, 회원 행 잠금과 revision 비교로 무차별 시도·동시 덮어쓰기를 방지합니다. 프록시 헤더를 임의 신뢰하지 않습니다. 운영 프록시의 신뢰 범위와 IP 제한은 실제 배포 시 확인해야 합니다. 제한이 프록시 IP에 묶인 상태에서 임의로 전체 Forwarded 헤더 신뢰를 켜지 마세요.
 
-### 소유자가 할 설정
-1. https://resend.com 에서 계정을 만든다.
-2. 직접 소유하거나 DNS 수정 권한이 있는 도메인을 Domains에 추가하고, 안내된 DNS 레코드로 인증한다. chatgpt.site 주소와 학교 이메일 주소만 가지고는 해당 도메인을 인증할 수 없다. jibro@dankook.ac.kr를 발신자로 사용하려면 학교 도메인 관리자의 협조가 필요하다.
-3. 인증된 도메인의 발신 주소를 정하고 발송 권한으로 제한한 API 키를 만든다.
-4. Sites 런타임에 JIBRO_RESEND_API_KEY를 **비밀 변수**로, JIBRO_MAIL_FROM을 발신 이메일 주소(이름·괄호 없이)로 등록한다. 키를 채팅·Git·프론트엔드 VITE 변수에 넣지 않는다. 기존 암호화 키와 인증 키는 유지한다.
-5. 환경변수를 적용해 배포한 뒤 본인 테스트 이메일로 가입 인증, 재요청, 비밀번호 재설정, 스팸함 및 Resend 실패 로그를 확인한다. URL 클릭 추적은 끈다. 서비스 공개 전 메일 처리 업체·국외 처리 정보와 개인정보 안내를 확정한다.
-6. 현재 Site의 접근 범위는 소유자 전용이다. 외부 회원의 메일 링크 접속은 별도로 승인된 Site 공개 범위 안에서만 가능하다. 메일 연결을 위해 접근 정책을 자동 변경하지 않는다.
+## 서버 설정
 
-### 실제 동작과 제한
-- 설정이 있으면 가입 시 인증 메일을 요청하고 내 정보 설정에서 인증 상태·재요청을 제공한다. 기존 계정을 잠그지 않도록 미인증 상태에서도 가입·로그인은 유지한다. emailVerified=true가 아닌 주소를 확인된 연락처로 취급하거나 다른 계정과 연결하면 안 된다.
-- 일반 사용자의 비밀번호 찾기는 가입 여부를 드러내지 않는 동일한 응답을 반환한다. 발송은 Worker waitUntil에 등록되며 실패 시 주소·토큰 없이 종류만 로그에 남긴다. API 접수는 받은 편지함 도착 보장이 아니다.
-- Better Auth가 발급·검증하는 링크는 30분 만료다. 재설정 토큰은 일회성이며 사용 시 모든 기존 세션을 폐기한다. 짧은 비밀번호, 만료·변조·재사용 토큰을 거부한다.
-- 인증·재설정 링크의 토큰은 /auth/complete#action=...&token=... 형식으로 보내 HTTP 주소·Referer에 노출하지 않는다. 화면이 읽은 후 주소에서 지우며 브라우저 저장소에 보관하지 않는다. 페이지를 새로고침했다면 메일 링크를 다시 연다.
-- 메일 링크를 열기만 해서는 이메일 인증이나 비밀번호 변경이 일어나지 않는다. 명시적인 버튼과 같은 출처 POST만 허용한다. 인증 링크로 자동 로그인하지 않는다.
-- 동의 우회를 막기 위해 /api/auth 직접 경로는 계속 차단한다. 발송·확인·재설정은 제한된 /api/account 래퍼만 사용한다.
-- 테스트 admin은 인증·복구 발송 대상에서 제외하며, 별도의 권한을 추가하지 않는다.
-- 자동화 테스트는 가짜 메일 전송기와 임시 DB만 사용한다. 실제 이메일 전달 검증을 대신하지 않는다.
+`backend/.env.example`을 참고합니다. `preview:account`는 `backend/.env.local`을 읽습니다. Spring 단독 실행/호스팅은 환경 변수나 비밀 관리 도구로 주입합니다.
 
+- `SPRING_PROFILES_ACTIVE=prod`: 운영. local과 동시 사용 금지.
+- `JIBRO_DATABASE_URL`, `JIBRO_DATABASE_USER`, `JIBRO_DATABASE_PASSWORD`: PostgreSQL JDBC 연결. 공급자에 맞는 TLS 설정 포함.
+- `JIBRO_APP_ORIGIN`: 브라우저가 사용하는 정확한 HTTPS 출처. 끝 슬래시·경로 없음.
+- `JIBRO_NOTEBOOK_KEYS`: [암호화 키](NOTEBOOK_ENCRYPTION.md). 운영 필수.
+- `JIBRO_RESEND_API_KEY`, `JIBRO_MAIL_FROM`: 발송 권한 키와 인증한 도메인의 이메일 주소. 표시 이름·괄호 없이 설정.
 
-이용약관과 개인정보 안내는 구현된 기능을 기준으로 작성했다. 운영 주체의 정확한 정보, 실제 위탁·국외 처리 조건과 보존 정책은 외부 공개 전에 확정해야 한다. 서비스 연락처는 `jibro@dankook.ac.kr`이다. 학교가 공식 운영 주체라고 단정하지 않는다.
+운영에서 React와 Spring을 같은 출처로 연결하고 `/api` 응답의 Set-Cookie를 그대로 전달해야 합니다. 메일 링크 `/auth/complete`는 React의 index.html로 연결합니다. 정적 화면만 올리면 회원 기능은 동작하지 않습니다.
 
-Site의 접근 권한과 앱 회원 로그인은 별개다. 이번 계정 기능은 기존 Site 공개 범위를 변경하지 않는다. 회원 기능을 추가했다고 기존 GitHub의 main 또는 팀 배포가 자동 변경되지 않는다.
+## 이메일 연결과 검증
+
+1. [Resend](https://resend.com)에 가입하고 직접 관리하는 발신 도메인을 인증합니다. 학교 주소를 발신자로 쓰려면 해당 도메인 관리자의 협조가 필요합니다.
+2. 발송 전용 API 키와 발신 주소를 Spring 서버의 비밀 환경 변수에 넣습니다. Git·채팅·`VITE_` 변수에 넣지 않습니다.
+3. 본인 테스트 메일로 가입 인증, 재요청, 비밀번호 재설정, 만료·재사용 실패를 확인합니다. 공급자 클릭 추적은 끕니다.
+
+설정이 없으면 emailAvailable=false와 503 email_unavailable를 반환합니다. 메일 없이 가입·로그인은 가능하며 미인증 계정의 공개 서비스 사용 범위는 TODO에 남아 있습니다. 미인증 주소를 소유가 확인된 연락처로 취급하지 않습니다.
+
+메일 작업은 제한된 비동기 큐에서 처리합니다. 비밀번호 찾기는 가입 여부와 관계없이 같은 접수 응답을 반환합니다. API 접수는 실제 수신을 보장하지 않습니다. 실패 로그에는 주소·토큰을 넣지 않습니다. 토큰은 SHA-256 해시만 DB에 보관하며 30분 만료·재요청 시 이전 토큰 폐기·사용 후 재사용 금지를 적용합니다. 비밀번호 재설정은 기존 로그인 세션을 모두 폐기합니다.
+
+링크는 `/auth/complete#action=verify|reset&token=...` 형식입니다. React가 읽고 주소에서 제거하며 메일을 열기만 해서는 상태가 바뀌지 않습니다. POST 버튼을 눌러야 처리합니다. 테스트 admin은 메일 대상이 아닙니다. 자동화 테스트는 가짜 전송기를 사용하므로 실제 수신 검증을 대신하지 않습니다.
+
+약관·개인정보 안내는 실제 운영 주체·위탁·국외 처리·보존 정책이 정해진 뒤 최종 확인해야 합니다. 문의처 `jibro@dankook.ac.kr`만으로 학교가 운영 주체라고 단정하지 않습니다.

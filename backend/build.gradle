@@ -20,11 +20,26 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.flywaydb:flyway-core'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'com.h2database:h2'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.80'
     implementation 'org.jsoup:jsoup:1.23.2'
     implementation 'org.apache.pdfbox:pdfbox:3.0.8'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 tasks.named('test') { useJUnitPlatform() }
+tasks.named('bootJar') { archiveFileName = 'jibro-api.jar' }
+tasks.named('processResources') {
+    from('../public') {
+        include 'notice-evidence.json', 'notice-schedules.json'
+        into 'snapshots'
+    }
+}

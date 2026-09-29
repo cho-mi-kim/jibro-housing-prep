@@ -1,17 +1,31 @@
-# LH 목록 수집 API
+# Spring MVC 회원·공고 API
 
 Java 17에서 `gradlew.bat bootRun`(Windows) 또는 `sh ./gradlew bootRun`(macOS/Linux)으로 실행합니다. 기본 포트는 8080입니다. 공식 API 키를 사용하는 방식이 아니라 LH 공개 목록 HTML을 읽습니다.
 
+## 회원과 로컬 실행
+
+루트에서 `npm run preview:account`를 실행하면 React 5173과 Spring 8080을 함께 실행합니다. Java 단독 실행은 위 Gradle 명령을 사용합니다. 기본 `local` 프로필은 127.0.0.1에만 연결하며 H2 파일 DB와 AES 키를 `.local-data/`에 영구 보관합니다. `admin/admin`은 로컬 전용 일반 회원입니다.
+
+운영은 `SPRING_PROFILES_ACTIVE=prod`, PostgreSQL 연결, HTTPS `JIBRO_APP_ORIGIN`, 비밀 `JIBRO_NOTEBOOK_KEYS`가 필수입니다. `prod`와 `local`을 함께 활성화할 수 없습니다. Flyway가 `src/main/resources/db/migration/`을 적용합니다. 배포 후에는 적용한 SQL을 수정하지 말고 새 버전 파일을 추가하세요.
+
+- [회원·메일 API 및 환경 변수](../docs/EMAIL_AUTH.md)
+- [암호화 키 관리](../docs/NOTEBOOK_ENCRYPTION.md)
+- [기존 D1 회원 이관](../docs/SPRING_MIGRATION.md)
+
+회원 API는 `/api/account*`와 `/api/member-notebook`입니다. CSRF 토큰은 `GET /api/account/csrf`로 받아 변경 요청의 `X-XSRF-TOKEN`에 보내고 `X-Jibro-Request: 1`, JSON, 정확한 Origin을 유지합니다. React의 `accountRequest`가 처리합니다. 이전 기기 ID 기반 `/api/notebook`과 `/api/auth` 직접 접근은 차단됩니다.
+
 ## 화면 연결
 
-루트 `.env.local`에 아래 값을 설정한 뒤 화면을 다시 빌드합니다. 목록·가져오기·발췌만 Spring에 연결하며, 회원 기록은 별도의 Worker/D1 계정 서버를 사용합니다.
+회원 요청과 `/api/notice-snapshots/{evidence|schedules}`는 화면과 같은 출처에서 Spring으로 전달합니다. 스냅샷 API는 JAR에 포함한 공개 자료 중 요청한 공고만 돌려줍니다. 자료 변경 후 JAR을 다시 빌드해야 합니다.
+
+공고 수집·실시간 발췌도 연결하려면 루트 `.env.local`에 아래 값을 넣고 Vite를 다시 시작합니다. Vite가 `/api`를 Spring으로 전달합니다.
 
 ```dotenv
-VITE_NOTICES_API_BASE=http://localhost:8080
-VITE_NOTICE_EVIDENCE_API_BASE=http://localhost:8080
+VITE_NOTICES_API_BASE=http://127.0.0.1:5173
+VITE_NOTICE_EVIDENCE_API_BASE=http://127.0.0.1:5173
 ```
 
-`VITE_API_BASE`는 공고 API 주소의 이전 공통 설정입니다. 현재 회원 앱의 저장 주소를 바꾸지 않습니다. Spring에 남아 있는 `/api/notebook`은 인증 없는 기기 헤더 방식의 이전 API이므로 공개 회원 서비스로 노출하지 않습니다. 계정 미리보기와 연결할 때 `JIBRO_CORS_ALLOWED_ORIGINS`에 `http://127.0.0.1:5190`을 추가하세요.
+`VITE_API_BASE`는 이전 공고 API 공통 주소입니다. 회원 주소·비밀 키 설정에 사용하지 않습니다. CORS 설정은 공고 API에만 적용하며 회원 API는 같은 출처의 프록시를 사용합니다.
 
 ## 수집 범위와 날짜
 
@@ -46,15 +60,14 @@ URL 가져오기는 HTTPS의 정확한 `apply.lh.or.kr` 상세 경로만 요청�
 
 | Spring 설정 / 환경 변수 | 기본값·설명 |
 | --- | --- |
-| `jibro.notices.scheduling-enabled` / `JIBRO_NOTICES_SCHEDULING_ENABLED` | `true`. 검증 서버는 `false`로 설정 가능 |
+| `jibro.notices.scheduling-enabled` / `JIBRO_NOTICES_SCHEDULING_ENABLED` | 운영 기본 `true`, local 프로필 `false`. 수동 요청은 별도 |
 | `jibro.notices.refresh-delay-ms` / `JIBRO_NOTICES_REFRESH_DELAY_MS` | `21600000` (6시간) |
 | `jibro.notices.initial-delay-ms` / `JIBRO_NOTICES_INITIAL_DELAY_MS` | `1000` |
 | `jibro.notices.cache-file` / `JIBRO_NOTICES_CACHE_FILE` | `${user.home}/.jibro/notices.json`. 공개 공고의 영속 캐시 경로 |
 | `jibro.notices.schedule-tick-ms` / `JIBRO_NOTICES_SCHEDULE_TICK_MS` | `60000`. 다음 수집 시각 확인 간격 |
 | `jibro.cors.allowed-origins` / `JIBRO_CORS_ALLOWED_ORIGINS` | 허용할 프론트엔드 Origin을 쉼표로 구분. 기본 localhost/127.0.0.1의 5173·4173 및 기존 chatgpt.site 주소 |
-| `jibro.notebook.store` / `JIBRO_NOTEBOOK_STORE` | `${user.home}/.jibro/notebook-state.json`. 운영 시 쓰기 가능한 영속 볼륨 필요 |
 
-준비 기록은 새 파일로 쓴 뒤 교체합니다. 저장 실패는 503으로 반환하고 기존 메모리 기록도 보존합니다. 깨진 저장 파일을 빈 기록으로 덮어쓰지 않습니다. 헤더 식별자는 인증·인가를 대신하지 않으며 다중 서버에서 하나의 파일을 함께 쓰는 구조는 지원하지 않습니다.
+회원 저장은 위 DB·암호화 안내를 따릅니다. 기기 헤더 방식의 옛 JSON 저장소는 HTTP로 노출하지 않습니다.
 
 ## 재검증
 

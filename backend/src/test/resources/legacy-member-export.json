@@ -1,0 +1,30 @@
+{
+  "format": "jibro-member-export-v1",
+  "users": [
+    {
+      "id": "legacy-member-A",
+      "name": "이전 회원",
+      "email": "legacy@example.test",
+      "email_verified": 1,
+      "terms_version": "2026-09-26",
+      "privacy_version": "2026-09-26",
+      "accepted_at": "2026-09-26T00:00:00Z",
+      "created_at": 1790380800000
+    }
+  ],
+  "accounts": [
+    {
+      "user_id": "legacy-member-A",
+      "provider_id": "credential",
+      "password": "6ad6b56e66ea8e48d8066ec3d91e1e3f:2ea68eaa8f24481841fa5ae0a078bed9e677460edc5227d87fb97b262b5df6e8a3b1e84b393bd91b2fd29af5c6f9cbbfe8debae487f163c7365a37771b486cb8"
+    }
+  ],
+  "notebooks": [
+    {
+      "user_id": "legacy-member-A",
+      "payload": "jibro:encrypted:v1:legacy-test:sLKhe3Ipp4TTi94c:HC5MwrWHIP_RQcj9PylczI-sdkP4TppwdHJlVEjZnP4ntEdhPV-esNq09qwMQxhb1N0w2yiWSxhEZ3I4d2j7xHNTSCop3G88RQUB5D4bbu_6CfCa21q9fDcqiSEVKuQMTmoftxS6WLn0M7LyOADG-Tf6c28WR-WRClsA_UeQXlGxJgnLZPmPezIpTbOsHU-hOaae7RZk4kXBqkhXwSgSuDZGUJGDQ8zucTtNAMJRe42rGHTM-ukWpwryl6DCmk__7QXSGBzZMzsYATttDpKlo_zJZ7BnnHOM1T-COj4Mxu2CMQzvo0_Sc5bFHE6QzPb2vkrJlT1iimJJjrjaIzmZXYF7ON6bqOByslwRQf09aqFMjNdewJyQDO00stqPE3Cy5NHzOvAaH_C7VB0IXHFhgv5iGZh-34rECIg0a53dbAgjsJQqIWj1FXWPMZzQ4Fnzv79Vma3UcA7i5seUU4fIqUS43h5PoGXvw1Z1ssPLg5hPaaY2AsnNGCe5Jvo7ZToVSarijd9k5FmEELr-J6whc8CYuA",
+      "revision": 7,
+      "updated_at": "2026-09-26T00:00:00Z"
+    }
+  ]
+}

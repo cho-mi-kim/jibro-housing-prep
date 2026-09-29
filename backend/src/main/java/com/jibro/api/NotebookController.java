@@ -16,8 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Anonymous device-scoped storage until account authentication is introduced. */
-@RestController
-@RequestMapping("/api/notebook")
+@Deprecated // Retained only to read/test old device-file formats. No HTTP route is registered.
 public class NotebookController {
  private static final String DEVICE_HEADER="X-Jibro-Device";
  private final ObjectMapper mapper=new ObjectMapper();

@@ -1,6 +1,6 @@
-import evidence from '../public/notice-evidence.json' with {type:'json'};
-import schedules from '../public/notice-schedules.json' with {type:'json'};
-import {evidenceNoticeKey,validEvidenceSummary} from '../src/noticeEvidence.mjs';
+import evidence from '../../../public/notice-evidence.json' with {type:'json'};
+import schedules from '../../../public/notice-schedules.json' with {type:'json'};
+import {evidenceNoticeKey,validEvidenceSummary} from '../../../src/noticeEvidence.mjs';
 
 // Serve only the selected notice. The committed snapshots remain the source of
 // truth; this endpoint does not claim to collect or refresh LH's live notices.

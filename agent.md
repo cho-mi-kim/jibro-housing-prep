@@ -31,14 +31,15 @@ JIBRO는 주거지원 공고를 확인하고 공고별 조건·서류 준비 상
 | `src/ScheduleTimeline.jsx`, `src/NextScheduleCard.jsx` | 전체 신청 일정·다음 일정 |
 | `src/SettingsSheets.jsx`, `src/MySupport.jsx` | 알림·프로필 설정, 서비스 안내·문의 |
 | `src/AccountPage.jsx`, `src/SignupWizard.jsx`, `src/ApplicantEditor.jsx` | 이메일 계정, 단계별 가입과 신청 조건 수정 |
-| `server/`, `db/`, `drizzle/` | Worker/D1 회원 인증, 암호화 준비 기록, DB 스키마와 마이그레이션 |
+| `backend/src/main/java/com/jibro/api/member/`, `backend/src/main/resources/db/migration/` | Spring 회원 인증·암호화 준비 기록·메일·Flyway 스키마 |
+| `migration/legacy-worker/` | 이전 Worker/D1 이관 참고. 일반 실행·빌드에서 제외 |
 | `src/noticeLifecycle.mjs`, `scripts/build-notice-catalog.mjs` | 공고·자료 버전, 재확인 상태, 실제 일정 기반 앱 알림 |
 | `src/documentRecommendations.mjs` | 입력한 신청 조건에 관련된 기존 서류 후보 먼저 표시 |
 | `docs/TODO.md` | 미완료 작업과 진행 조건. 완료 항목은 제거하고 기존 번호 유지 |
 | `backend/EVIDENCE.md`, `docs/notice-documents.md` | 발췌·스냅샷 생성과 서류 데이터의 검증 범위 |
 | `backend/src/main/java/com/jibro/api/JibroApplication.java` | 서버 시작, 스케줄링 활성화 |
 | `backend/src/main/java/com/jibro/api/NoticeController.java` | LH 목록 수집, 갱신, URL 가져오기 |
-| `backend/src/main/java/com/jibro/api/NotebookController.java` | 기기별 준비 기록 조회·저장 |
+| `backend/src/main/java/com/jibro/api/NoticeSnapshotController.java` | 선택 공고의 저장 발췌·일정 제공 |
 | `README.md`, `CONTRIBUTING.md` | 설치·실행, 협업 절차와 알려진 제한 |
 
 수정 전에 대상 함수와 연결된 화면을 읽습니다. `main.jsx`에는 여러 화면이 함께 있으므로 문자열 전체 치환으로 다른 화면까지 바꾸지 않도록 주의합니다.
@@ -53,26 +54,11 @@ npm ci
 npm run preview:account
 ```
 
-계정 미리보기 주소는 `http://127.0.0.1:5190`입니다. 임시 Worker/D1에 일반 테스트 회원 `admin / admin`을 생성하며 종료 시 기록과 키가 폐기됩니다. `npm run dev`의 `http://localhost:5173`과 `npm run preview`는 화면만 확인하며 계정 서버를 제공하지 않습니다. 빌드와 화면 빌드 결과 확인은 다음과 같습니다.
+Java 17 JDK와 JAVA_HOME도 필요합니다. 이 명령은 Spring 8080과 React 5173을 함께 실행하며 주소는 `http://127.0.0.1:5173`입니다. 로컬 전용 일반 테스트 회원 `admin/admin`을 제공합니다. `backend/.local-data/`의 DB와 키는 종료 후에도 유지합니다. 실제 정보를 테스트에 쓰거나 해당 폴더를 Git에 넣지 않습니다.
 
-```sh
-npm run build
-npm run preview
-```
+`npm run dev`와 `npm run preview`는 React만 실행하고 `/api`를 별도 Spring 8080으로 전달합니다. `npm run build`는 `dist/client`를 생성하며 Worker 번들은 만들지 않습니다. `backend/.env.example`은 회원·메일·DB 설정, 루트 `.env.example`은 공고 API 설정입니다. `preview:account`만 `backend/.env.local`을 읽고 Java 단독 실행은 서버 환경 변수로 설정합니다. `VITE_`에는 비밀을 넣지 않습니다.
 
-서버는 Java 17이 필요합니다. 저장소의 Gradle Wrapper 8.14.3을 사용합니다. Windows에서는 `gradlew.bat`, macOS/Linux에서는 `sh ./gradlew`를 사용합니다.
-
-```sh
-cd backend
-sh ./gradlew bootRun
-```
-
-루트의 `.env.example`을 참고해 `.env.local`에 `VITE_NOTICES_API_BASE=http://localhost:8080`, `VITE_NOTICE_EVIDENCE_API_BASE=http://localhost:8080`을 설정하고 다시 빌드합니다. 계정 미리보기의 출처를 Spring CORS에 허용해야 합니다.
-회원 준비 기록은 같은 출처의 Worker API를 사용합니다. `VITE_API_BASE`는 이전 공고 API 공통 주소이며 인증·회원 저장을 연결하지 않습니다. 기존 브라우저 기록은 사용자가 가져오기를 선택할 때만 회원 기록과 합칩니다.
-`VITE_` 환경 변수는 브라우저에 공개되므로 비밀 키를 넣지 않습니다.
-
-프론트엔드는 `npm test`와 `npm run build`를 실행합니다. 회원·저장은 `npm run test:account`도 실행합니다. `npm run lint`는 없습니다. GitHub 빌드는 개인 `.openai/hosting.json` 없이 `dist/client`와 `dist/server`를 생성해야 합니다.
-백엔드는 `sh ./gradlew build`(Windows: `gradlew.bat build`)로 테스트와 빌드를 실행합니다. 분석 도구는 `backend/scripts/requirements.txt`를 설치하고 루트에서 `python -m unittest discover -s backend/scripts -p "test_*.py"`로 검증합니다.
+프론트엔드는 `npm test`, `npm run build`, 회원 변경은 `npm run test:account`를 실행합니다. 서버 전체는 `backend`에서 `sh ./gradlew build`(Windows: `gradlew.bat build`)로 검증합니다. Java 17/Gradle Wrapper 8.14.3을 유지합니다. 분석 도구는 기존 Python requirements와 테스트를 사용하며 Python은 회원 인증 서버가 아닙니다.
 
 ## 4. 현재 데이터·API 구조
 
@@ -88,14 +74,14 @@ sh ./gradlew bootRun
 | `GET /api/notices` | `items`, `lastCheckedAt`, `status` 형태의 목록 스냅샷 조회 |
 | `POST /api/notices/refresh` | 목록 수집 재시도 |
 | `POST /api/notices/import` | `{ "url": "..." }`를 받아 공고 정보 추출 시도 |
-| `/api/account*` | 같은 출처 Worker의 가입·로그인·세션·계정 설정·메일 처리 |
+| `/api/account*` | 같은 출처 Spring의 가입·로그인·세션·설정·메일·CSRF 처리 |
 | `GET /api/member-notebook` | 세션 회원의 암호화 준비 기록 조회 |
 | `PUT /api/member-notebook` | 회원 기록 저장. revision 충돌 시 기존 기록을 덮어쓰지 않음 |
-| `GET/PUT /api/notebook` (Spring) | 이전 기기 헤더 방식 API. 현재 회원 화면은 사용하지 않음 |
+| `/api/notebook`, `/api/auth` | 이전 방식 우회 접근 차단 |
 
-회원 서버는 Better Auth 세션의 사용자 ID로 D1 기록을 구분합니다. 비밀번호는 scrypt 해시, 신청 조건·준비 기록은 서버의 별도 키로 AES-256-GCM 암호화합니다. 이메일·닉네임은 준비 기록 암호화 범위에 포함되지 않습니다. 키 누락 시 평문 저장으로 우회하지 않습니다. 설정·기존 기록 변환·키 교체는 `docs/EMAIL_AUTH.md`와 `docs/NOTEBOOK_ENCRYPTION.md`를 따릅니다.
+회원 서버는 Java Spring MVC이며 세션 사용자 ID로 DB 기록을 구분합니다. 운영 PostgreSQL·로컬 H2를 사용합니다. 비밀번호는 scrypt 해시, 신청 조건·준비 기록은 AES-256-GCM입니다. 이메일·닉네임은 추가 암호화 범위에 포함되지 않습니다. 키 누락 시 평문으로 우회하지 않습니다. 회원 응답 no-store, CSRF/Origin/JSON 검사, DB 요청 제한과 revision 충돌 보호를 유지합니다.
 
-Spring에 남아 있는 기기 헤더 기반 JSON 저장 API는 회원 인증 서버가 아니며 공개 회원 저장에 사용하지 않습니다. Worker/D1 회원 서버와 Spring 수집 서버를 혼동하지 않습니다. 운영 호스팅·DB·메일·접근 설정은 TODO의 미완료 항목입니다.
+`docs/EMAIL_AUTH.md`, `docs/NOTEBOOK_ENCRYPTION.md`, `docs/SPRING_MIGRATION.md`를 따릅니다. 이전 Worker/D1 형식은 합성 데이터로만 이관 테스트합니다. 기존 Site의 실제 회원·키·배포를 승인 없이 변경하지 않습니다. local 프로필은 loopback 전용이며 prod는 HTTPS·PostgreSQL·키를 필수로 하고 테스트 로그인은 차단합니다. 운영 호스팅·실제 이관·메일 전달은 TODO의 미완료 항목입니다.
 
 ## 5. 기능 수정 시 지켜야 할 기준
 

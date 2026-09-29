@@ -12,8 +12,9 @@ public class WebConfig implements WebMvcConfigurer {
         this.origins = origins;
     }
     @Override public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**").allowedOrigins(origins)
-            .allowedMethods("GET", "POST", "PUT", "OPTIONS")
-            .allowedHeaders("Content-Type", "X-Jibro-Device").allowCredentials(true);
+        registry.addMapping("/api/notices/**").allowedOrigins(origins)
+            .allowedMethods("GET", "POST", "OPTIONS")
+            .allowedHeaders("Content-Type", "X-Jibro-Request");
+        registry.addMapping("/api/notice-evidence/**").allowedOrigins(origins).allowedMethods("GET", "OPTIONS");
     }
 }

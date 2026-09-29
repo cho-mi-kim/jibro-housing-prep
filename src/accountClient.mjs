@@ -1,8 +1,15 @@
-export const POLICY_VERSION='2026-09-26';
+export const POLICY_VERSION='2026-09-29';
 export async function accountRequest(path,options={}){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
  try{
-  const response=await fetch(path,{credentials:'same-origin',cache:'no-store',...options,signal:controller.signal,headers:{...(options.body?{'Content-Type':'application/json','X-Jibro-Request':'1'}:{}),...options.headers}});
+  let csrfHeaders={};
+  if(!['GET','HEAD','OPTIONS'].includes((options.method||'GET').toUpperCase())){
+   const check=await fetch('/api/account/csrf',{credentials:'same-origin',cache:'no-store',signal:controller.signal});
+   const token=await check.json().catch(()=>null);
+   if(!check.ok||token?.headerName!=='X-XSRF-TOKEN'||typeof token.token!=='string')throw Error('계정 서비스에 연결하지 못했어요. 잠시 후 다시 시도해주세요.');
+   csrfHeaders={[token.headerName]:token.token};
+  }
+  const response=await fetch(path,{credentials:'same-origin',cache:'no-store',...options,signal:controller.signal,headers:{...(options.body?{'Content-Type':'application/json','X-Jibro-Request':'1'}:{}),...options.headers,...csrfHeaders}});
   let data;try{data=await response.json();}catch{throw Error('계정 서비스에 연결하지 못했어요. 잠시 후 다시 시도해주세요.');}
   if(!response.ok){const e=Error(data.message||'요청을 처리하지 못했어요.');e.status=response.status;e.code=data.error;throw e;}return data;
  }catch(error){if(error.name==='AbortError')throw Error('계정 확인이 지연되고 있어요. 다시 시도해주세요.');throw error;}finally{clearTimeout(timer);}

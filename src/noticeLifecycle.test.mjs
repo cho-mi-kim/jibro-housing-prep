@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {catalogEntry,noticeRevision,recordReview,applicationStatus,displayNotice,noticeEvents} from './noticeLifecycle.mjs';
 import {documentPlan} from './noticeDocuments.mjs';
-import {normalizeNotebook} from '../server/notebook.mjs';
 const notice={id:'lh-12345678',title:'국민임대',posted:'2026-09-01',deadline:'2026-12-31',deadlineKind:'notice',status:'공고중',url:'https://apply.lh.or.kr/lhapply/apply/wt/wrtanc/selectWrtancInfo.do?panId=12345678&mi=1026'};
 const entry={notice,key:notice.url,revision:'source-v1',versions:{conditions:'c1'},documentVersions:{resident:'d1'},variants:[{label:'일반',dates:{applicationStart:'2026-09-28',deadline:'2026-09-29',documentAnnouncement:'2026-10-01'}}]};
 const catalog={items:{[notice.id]:entry}};
@@ -43,11 +42,6 @@ test('event IDs deduplicate scopes, change at today boundary, and are scoped to 
  assert.ok(noticeEvents({...notice,id:'lh-87654321'},multi,{},'2026-09-27').every(e=>!before.some(a=>a.id===e.id)));
  assert.equal(noticeEvents(notice,entry,{},'2027-01-01').length,0);
  const change=noticeEvents(notice,entry,{noticeRevision:'old'},'2026-09-27')[0];assert.equal(change.kind,'change');assert.ok(change.id.length<180);
-});
-test('notification reads and per-item source versions survive encrypted notebook normalization',()=>{
- const value=normalizeNotebook({activeNoticeId:notice.id,notificationReads:['event1','event1'],noticeData:{[notice.id]:{conditions:['age'],conditionVersions:{age:'c1'},documentVersions:{resident:'d1'},noticeRevision:noticeRevision(notice,catalog)}}});
- assert.deepEqual(value.notificationReads,['event1']);assert.equal(value.noticeData[notice.id].conditionVersions.age,'c1');assert.equal(value.noticeData[notice.id].documentVersions.resident,'d1');assert.equal(value.noticeData[notice.id].noticeRevision,noticeRevision(notice,catalog));
- assert.deepEqual(normalizeNotebook({}).notificationReads,[]);
 });
 
 test('cancelled and stale schedules cannot emit actionable date events or count old evidence',()=>{

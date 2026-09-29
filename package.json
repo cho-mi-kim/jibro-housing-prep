@@ -1,25 +1,18 @@
 {
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build-account-site.mjs",
+    "build": "node scripts/build-app.mjs",
     "preview": "vite preview --outDir dist/client",
     "test": "node scripts/run-frontend-tests.mjs",
-    "db:generate": "drizzle-kit generate",
-    "test:account": "node --test server/account.test.mjs server/notebook-crypto.test.mjs server/mail.test.mjs server/notice-snapshots.test.mjs",
-    "preview:account": "node scripts/build-account-site.mjs && node scripts/preview-account.mjs"
+    "test:account": "node scripts/test-account.mjs",
+    "preview:account": "node scripts/start-local.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "better-auth": "1.7.6",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "vite": "latest",
-    "drizzle-orm": "0.45.3"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.31.11",
-    "miniflare": "5.20260923.0-alpha"
+    "vite": "latest"
   },
   "engines": {
     "node": ">=24.19.0",

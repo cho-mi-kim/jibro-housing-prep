@@ -1,4 +1,4 @@
-import {normalizeApplicantProfile} from '../src/applicantProfile.mjs';
+import {normalizeApplicantProfile} from '../../../src/applicantProfile.mjs';
 export class HttpError extends Error{constructor(status,code,message){super(message);this.status=status;this.code=code;}}
 export function validatedApplicantProfile(value){try{return normalizeApplicantProfile(value)}catch(e){throw new HttpError(400,'applicant_profile',e.message)}}
 export function normalizeNotebook(input){
