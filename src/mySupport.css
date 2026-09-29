@@ -1,0 +1,20 @@
+.my-support{display:grid;margin:24px 0 0;padding:0 14px;border:1px solid #e6e8eb;border-radius:16px;background:#fff}
+.my-support>button{display:flex;align-items:center;gap:12px;min-height:64px;width:100%;padding:12px 0;border:0;background:transparent;color:var(--ink);font-size:15px;font-weight:650;text-align:left;line-height:1.5}
+.my-support>button+button{border-top:1px solid #eceef0}
+.my-support>button>svg:last-child{margin-left:auto;flex-shrink:0;color:#717c87}
+.my-support-icon{display:grid;place-items:center;width:36px;height:36px;flex-shrink:0;border-radius:50%;background:#fff0e9;color:var(--orange)}
+.my-support-icon.neutral{background:#f0f2f5;color:#667381}
+.my-support>button:focus-visible{outline:3px solid var(--orange);outline-offset:3px;border-radius:6px}
+.service-guide>p{font-size:14px;line-height:1.65;color:#596573}
+.service-guide ol{margin:20px 0;padding-left:22px;color:var(--orange)}
+.service-guide li{padding-left:5px;margin-bottom:16px}
+.service-guide li b{display:block;font-size:15px;color:var(--ink);line-height:1.6}
+.service-guide li span{display:block;font-size:14px;color:#596573;line-height:1.6;margin-top:3px}
+.service-guide .service-guide-note{padding:12px;background:#faf8f6;border-radius:10px;font-size:13px;line-height:1.65}
+.service-contact-address{display:flex;align-items:center;gap:12px;border:1px solid #f0dacf;border-radius:12px;background:#fffaf7;padding:16px 14px;margin:18px 0;color:var(--orange)}
+.service-contact-address>svg{flex-shrink:0}
+.service-contact-address>span{min-width:0;font-size:13px;color:#65717b;line-height:1.5}
+.service-contact-address strong{display:block;font-size:16px;line-height:1.6;color:var(--ink);overflow-wrap:anywhere;user-select:text}
+.service-guide .primary{min-height:48px;text-decoration:none}
+.service-guide .service-contact-help{font-size:13px;line-height:1.65;margin-top:14px}
+.service-guide a:focus-visible{outline:3px solid var(--orange);outline-offset:3px}

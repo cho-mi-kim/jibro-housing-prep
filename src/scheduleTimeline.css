@@ -1,0 +1,26 @@
+.application-timeline{padding:18px 16px 14px;margin:20px 0;border:1px solid #efddd5;border-radius:18px;background:linear-gradient(120deg,#fff,#fff8f4)}
+.application-timeline-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.application-timeline-heading h2{margin:0;font-size:17px;line-height:1.4;color:var(--ink)}
+.application-timeline-heading>span{font-size:11px;color:var(--muted);white-space:nowrap}
+.application-timeline ol{list-style:none;margin:0;padding:0}
+.timeline-stage{position:relative;display:grid;grid-template-columns:22px 68px minmax(0,1fr) auto;gap:9px;align-items:center;min-height:58px;padding:6px 0}
+.timeline-stage:not(:last-child):before{content:'';position:absolute;left:10px;top:calc(50% + 11px);bottom:calc(-50% + 11px);width:2px;background:#e2dcd8}
+.timeline-marker{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:22px;height:22px;border:2px solid #c5bbb6;border-radius:50%;color:white;background:#fffaf7}
+.timeline-stage.is-past .timeline-marker{background:var(--orange);border-color:var(--orange)}
+.timeline-stage.is-current .timeline-marker,.timeline-stage.is-today .timeline-marker{background:var(--orange);border-color:var(--orange);box-shadow:0 0 0 4px #fbe4d9}
+.timeline-stage time{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:12px;color:#535b64;line-height:1.3}
+.timeline-stage time b{font-weight:700;white-space:nowrap}
+.timeline-stage time small{font-size:11px;color:var(--muted)}
+.timeline-date-missing{font-size:16px;color:#7b7774;text-align:center}
+.timeline-stage-title{font-size:13px;font-weight:600;line-height:1.45;word-break:keep-all;overflow-wrap:anywhere;color:#39424c}
+.timeline-stage.is-current time b,.timeline-stage.is-today time b{color:var(--orange-dark)}
+.timeline-badge{min-width:46px;padding:4px 7px;border-radius:999px;text-align:center;background:#eeeff1;color:#59636e;font-size:11px;font-weight:700;line-height:1.35;white-space:nowrap}
+.is-past .timeline-badge,.is-current .timeline-badge,.is-today .timeline-badge{background:#fce7de;color:#a83e25}
+.timeline-badge.is-near{background:#ffe6dc;color:#af351e}
+.timeline-note{margin:14px 0 0;padding-top:12px;border-top:1px solid #f0e6e0;font-size:12px;color:var(--muted);line-height:1.6;word-break:keep-all}
+@media(max-width:360px){.application-timeline{padding:16px 12px 12px}.timeline-stage{grid-template-columns:20px 55px minmax(0,1fr) auto;gap:6px;min-height:64px}.timeline-marker{width:20px;height:20px}.timeline-stage:not(:last-child):before{left:9px;top:calc(50% + 10px);bottom:calc(-50% + 10px)}.timeline-stage-title{font-size:12px}.timeline-badge{min-width:42px;padding:4px 6px;font-size:10px}.timeline-stage time{font-size:11px}}
+
+.timeline-variant{display:block;font-size:13px;color:var(--muted);margin:0 0 12px}.timeline-variant select{display:block;width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:white;padding:8px;margin-top:5px}.timeline-variant select:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+.timeline-stage-title small{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:4px}.timeline-stage time small{line-height:1.5}
+.timeline-checked{font-size:12px;color:var(--muted);margin:14px 0 4px}.timeline-evidence{margin-top:8px;border-top:1px solid #efddd5;font-size:13px}.timeline-evidence summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--orange-dark);font-weight:600}.timeline-evidence summary:after{content:'⌄';margin-left:auto}.timeline-evidence[open] summary:after{content:'⌃'}.timeline-evidence summary:focus-visible{outline:2px solid var(--orange);outline-offset:2px}.timeline-evidence a{display:flex;align-items:center;min-height:44px;text-decoration:underline;overflow-wrap:anywhere}.timeline-evidence pre{font:inherit;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;background:white;padding:10px;border-radius:8px;margin:0 0 12px}
+.timeline-scope{font-size:12px;line-height:1.6;overflow-wrap:anywhere;color:var(--muted);margin:0 0 12px}.timeline-variant select{min-width:0;max-width:100%;font:inherit}.timeline-evidence{min-width:0;max-width:100%}

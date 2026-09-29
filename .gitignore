@@ -12,3 +12,20 @@ build/
 .sites-runtime/
 work/
 *.tar.gz
+
+# Local analysis environments and reports
+.venv/
+__pycache__/
+*.py[cod]
+output/
+outputs/
+*.tar
+
+# Account preview data and runtime configuration
+.wrangler/
+.dev.vars
+.dev.vars.*
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*

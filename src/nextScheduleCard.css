@@ -1,0 +1,23 @@
+/* A compact information group: next event first, notice details second. */
+.home-first-screen>.hero-card .hero-main:has(.hero-context-column){grid-template-columns:minmax(0,1fr) minmax(0,45%);align-items:center!important}
+.home-first-screen .hero-context-column{display:flex;flex-direction:column;gap:0;min-width:0;height:auto;max-width:218px;align-self:end;border:1px solid #efded5;border-radius:14px;background:#fffcfa;overflow:visible}
+.home-first-screen .home-next-schedule{position:relative;display:block;width:100%;min-height:94px;text-align:left;padding:12px;border:0;border-radius:13px 13px 0 0;background:#fff5ee;box-shadow:none;white-space:normal;transition:background .15s}
+.home-first-screen .home-next-schedule:hover{background:#ffebe0}
+.home-first-screen .home-next-schedule:focus-visible{outline:2px solid var(--orange-dark);outline-offset:3px;z-index:1}
+.home-next-schedule-icon{position:absolute;top:11px;left:12px;display:grid;place-items:center;width:22px;height:22px;color:var(--orange);background:#ffebe2;border-radius:7px}
+.home-next-schedule-icon svg{width:15px;height:15px}
+.home-next-schedule-arrow{position:absolute;right:10px;top:15px;color:#8c6557}
+.home-next-schedule-copy{display:flex;flex-direction:column;gap:3px;min-width:0;line-height:1.45}
+.home-next-schedule-label{min-height:22px;padding:1px 16px 0 28px;font-size:12px;font-weight:600;color:#535d67}
+.home-next-schedule-copy time,.home-next-schedule-copy strong{font-size:18px;line-height:1.4;font-weight:800;color:var(--orange-dark);word-break:keep-all;overflow-wrap:anywhere}
+.home-next-schedule-copy time small{font-size:12px;margin-left:5px;font-weight:600}
+.home-next-schedule-event,.home-next-schedule-scope{font-size:12px;color:#626c76;word-break:keep-all;overflow-wrap:anywhere}
+.home-first-screen .hero-context-column>.hero-meta{margin:0;align-self:stretch;min-width:0;padding:10px 12px 0!important;border:0;border-top:1px solid #efded5;border-radius:0 0 13px 13px;gap:3px!important;background:transparent}
+.home-first-screen .hero-context-column .hero-meta-label{font-size:12px;font-weight:500;color:#626c76}
+.home-first-screen .hero-context-column>.hero-meta .deadline{margin-top:0;font-size:12px;font-weight:500;line-height:1.5;white-space:normal!important}
+.home-first-screen .hero-context-column .deadline b{font-size:14px;font-weight:700;color:#535d67;margin-left:5px;white-space:nowrap}
+.home-first-screen .hero-context-column .hero-meta-links{width:100%;min-height:44px;margin:0}
+.home-first-screen .hero-context-column .hero-inline-source{display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;min-height:44px!important;padding:0;background:none;border:0;font-size:12px;font-weight:600;color:#535d67;text-align:left}
+.home-first-screen .hero-context-column .hero-inline-source:hover{color:var(--orange-dark)}
+.home-first-screen .hero-context-column .hero-inline-source:focus-visible{outline:2px solid var(--orange-dark);outline-offset:2px;border-radius:4px}
+@media(max-width:360px){.home-first-screen .home-next-schedule{padding:10px}.home-next-schedule-icon{left:10px;top:9px}.home-next-schedule-arrow{right:7px;top:13px}.home-next-schedule-copy time,.home-next-schedule-copy strong{font-size:16px}.home-first-screen .hero-context-column>.hero-meta{padding:9px 10px 0!important}}
